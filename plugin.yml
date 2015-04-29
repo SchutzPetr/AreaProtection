@@ -1,0 +1,8 @@
+main: cz.Sicka.AreaProtection.AreaProtection
+name: AreaProtection
+version: 0.0.1-BETA_R0.0_DEV
+author: Sicka_gp
+commands:
+   areaprotection:
+      aliases: [area]
+#softdepend: [Vault, Stats, mcMMO, GeoIPTools, Heroes, pvpstats, Factions, SimpleClans, ProtocolLib, HolographicDisplays, Autorank, Achievements]

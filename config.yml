@@ -1,0 +1,5 @@
+DefaultAreaSettings:
+   AreaFlags:
+      build: false
+      use: false
+      container: false
