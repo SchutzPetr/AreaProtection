@@ -177,11 +177,7 @@ public class Area {
 	
 	public String getOwnerName() {
 		if(this.areaType == AreaType.PLAYER_AREA){
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: getOwnerName");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return null;
+			return playerArea.getOfflineOwner().getName();
 		}else if(this.areaType == AreaType.SERVER_AREA){
 			return serverArea.getOwnerName();
 		}else{
@@ -189,7 +185,7 @@ public class Area {
 			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
 			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: getOwnerName");
 			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return null;
+			return "Nature";
 		}
 	}
 	

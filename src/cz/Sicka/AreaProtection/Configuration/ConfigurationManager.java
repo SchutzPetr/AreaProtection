@@ -37,6 +37,14 @@ public class ConfigurationManager {
 		loadWorldConfigurations();
 	}
 	
+	public Map<String, Configuration> getSaveAreaConfigs(){
+		return worldsareasConfigs;
+	}
+	
+	public Map<String, Configuration> getWorldConfigs(){
+		return worldsworldConfigs;
+	}
+	
 	public void saveFiles(){
 		for(Configuration c : this.worldsareasConfigs.values()){
 			c.saveConfig();
@@ -183,43 +191,5 @@ public class ConfigurationManager {
 				e.printStackTrace();
 			}
 		}
-	}
-	
-	public void createPlayerArea(Player owner, String areaName, Location loc1, Location loc2, String world){
-		PlayerArea pa = new PlayerArea(areaName, owner.getUniqueId(), loc1.getBlockX(), loc1.getBlockY(), loc1.getBlockZ(), loc2.getBlockX(), loc2.getBlockY(), loc2.getBlockZ(), world);
-		Area a = new Area(pa);
-		Configuration c = this.worldsareasConfigs.get(world);
-		if(c.getConfig().isSet(areaName)){
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: ConfigurationManager");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: createPlayerArea");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Description: Area already exist!");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-		}else{
-			c.getConfig().set("Areas." + areaName + ".Data.Location.LowX", a.getLowX());
-			c.getConfig().set("Areas." + areaName + ".Data.Location.LowY", a.getLowY());
-			c.getConfig().set("Areas." + areaName + ".Data.Location.LowZ", a.getLowZ());
-			
-			c.getConfig().set("Areas." + areaName + ".Data.Location.HighX", a.getHighX());
-			c.getConfig().set("Areas." + areaName + ".Data.Location.HighY", a.getHighY());
-			c.getConfig().set("Areas." + areaName + ".Data.Location.HighZ", a.getHighZ());
-			
-			c.getConfig().set("Areas." + areaName + ".Data.Location.World", a.getWorldName());
-			
-			c.getConfig().set("Areas." + areaName + ".Data.Owner", owner.getUniqueId().toString());
-			
-			c.getConfig().set("Areas." + areaName + ".Data.AreaType", AreaType.PLAYER_AREA.toString());
-			
-			c.getConfig().getLong("Areas." + areaName + ".Data.CreationDate", System.currentTimeMillis());
-			
-			c.getConfig().createSection("Areas." + areaName + ".Data.Flags");
-			
-			a.getAreaFlags();
-		}
-	}
-	
-	public void createServerArea(String owner, String areaName, Location loc1, Location loc2, String world){
-		ServerArea sa = new ServerArea(areaName, owner, loc1.getBlockX(), loc1.getBlockY(), loc1.getBlockZ(), loc2.getBlockX(), loc2.getBlockY(), loc2.getBlockZ(), world);
-		Area a = new Area(sa);
 	}
 }

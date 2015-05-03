@@ -1,10 +1,16 @@
 package cz.Sicka.AreaProtection;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.gmail.filoghost.holographicdisplays.api.Hologram;
+import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 
 import cz.Sicka.AreaProtection.API.AreaProtectionManager;
 import cz.Sicka.AreaProtection.Chunks.ChunkAPManager;
@@ -18,6 +24,8 @@ import cz.Sicka.AreaProtection.Listeners.BlockBreakeEvent;
 import cz.Sicka.AreaProtection.Listeners.MoveListener;
 import cz.Sicka.AreaProtection.Listeners.PlayerInteract;
 import cz.Sicka.AreaProtection.Utils.AnsiColor;
+import cz.Sicka.AreaProtection.Utils.Selections.SelectionManager;
+import cz.Sicka.AreaProtection.Utils.Tasks.MainTask;
 
 public class AreaProtection extends JavaPlugin {
 	private static Logger log = Logger.getLogger("Minecraft");
@@ -27,6 +35,7 @@ public class AreaProtection extends JavaPlugin {
 	private AreaProtectionManager apm;
 	private static Debug deb;
 	private LangConfiguration langc;
+	private static List<String> enableWorlds = new ArrayList<String>();
 
 	public static AreaProtection getInstance() {
 		return plugin;
@@ -39,6 +48,9 @@ public class AreaProtection extends JavaPlugin {
 		new Lang();
 		new AnsiColor();
 		new FlagManager();
+		
+		enableWorlds.add("world");
+		
 		ChunkAPManager.init();
 		deb = new Debug();
 		
@@ -51,6 +63,8 @@ public class AreaProtection extends JavaPlugin {
 		pm.registerEvents(new BlockBreakeEvent(), this);
 		pm.registerEvents(new MoveListener(), this);
 		pm.registerEvents(new PlayerInteract(), this);
+		
+		new MainTask(this);
 	}
 	
 	@Override
@@ -58,6 +72,12 @@ public class AreaProtection extends JavaPlugin {
 		c.saveFiles();
 		deb.save();
 		langc.save();
+		SelectionManager.clearAll();
+		Bukkit.getScheduler().cancelTasks(getInstance());
+		for(Hologram h : HologramsAPI.getHolograms(getInstance())){
+			h.delete();
+		}
+		
 	}
 	
 	@Override
@@ -84,11 +104,19 @@ public class AreaProtection extends JavaPlugin {
 		return c;
 	}
 	
-	public LangConfiguration getLangConfiguration(){
-		return langc;
+	public static boolean isEnableWorld(String world){
+		return enableWorlds.contains(world);
 	}
 	/*
 	public ChunkAPManager getChunkAPManager() {
 		return chapm;
 	}*/
+
+	public Debug getDebug() {
+		return deb;
+	}
+
+	public LangConfiguration getLangConfiguration() {
+		return langc;
+	}
 }

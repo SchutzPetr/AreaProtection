@@ -8,7 +8,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import cz.Sicka.AreaProtection.API.AreaProtectionAPI;
 import cz.Sicka.AreaProtection.Area.Area;
 import cz.Sicka.AreaProtection.Flags.FlagManager;
-import cz.Sicka.AreaProtection.Utils.Selection;
+import cz.Sicka.AreaProtection.Utils.Selections.SelectionManager;
 
 public class BlockBreakeEvent implements Listener {
 	/*
@@ -32,18 +32,20 @@ public class BlockBreakeEvent implements Listener {
 	
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onBlockBreakeEvent(BlockBreakEvent e){
-		if(Selection.getProtektedBlock().contains(e.getBlock().getLocation())){
-			e.setCancelled(true);
-			e.getPlayer().sendMessage("You cant breake this block");
-		}else{
-			Area a = AreaProtectionAPI.getAreaProtectionManager().getAreaByLocation(e.getBlock().getLocation());
-			if(!a.allowAction(e.getPlayer().getUniqueId(), FlagManager.getFlag("Build"))){
-				e.getPlayer().sendMessage("You Havent perm");
+		if(cz.Sicka.AreaProtection.AreaProtection.isEnableWorld(e.getBlock().getWorld().getName())){
+			if(SelectionManager.getProtectedLocations().contains(e.getBlock().getLocation())){
 				e.setCancelled(true);
+				e.getPlayer().sendMessage("You cant breake this block");
 			}else{
-				e.getPlayer().sendMessage("You Have perm");
-				
-				e.getPlayer().sendMessage(a.getName());
+				Area a = AreaProtectionAPI.getAreaProtectionManager().getAreaByLocation(e.getBlock().getLocation());
+				if(!a.allowAction(e.getPlayer().getUniqueId(), FlagManager.getFlag("Build"))){
+					e.getPlayer().sendMessage("You Havent perm");
+					e.setCancelled(true);
+				}else{
+					e.getPlayer().sendMessage("You Have perm");
+					
+					e.getPlayer().sendMessage(a.getName());
+				}
 			}
 		}
 	}
