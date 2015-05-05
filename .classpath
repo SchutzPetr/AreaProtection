@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="E:/Programování/Eclipse-Lib - AreaProtection/spigot-1.8.3.jar"/>
 	<classpathentry kind="lib" path="E:/Programování/Eclipse-Lib - AreaProtection/Vault.jar"/>
 	<classpathentry kind="lib" path="E:/Programování/Eclipse-Lib - AreaProtection/HolographicDisplays.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/CreeplandsCore 0.0.1-BETA_R0.1"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

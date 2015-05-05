@@ -20,6 +20,11 @@ public class MoveListener implements org.bukkit.event.Listener {
 		cz.Sicka.AreaProtection.Area.Area ato = cz.Sicka.AreaProtection.API.AreaProtectionAPI.getAreaProtectionManager().getAreaByLocation(to);
 		if(this.lastArea.containsKey(player)){
 			cz.Sicka.AreaProtection.Area.Area afrom = this.lastArea.get(player);
+			if(afrom == null){
+				this.lastArea.remove(player);
+				this.lastArea.put(player, ato);
+				return;
+			}
 			if(!afrom.getName().equalsIgnoreCase(ato.getName())){
 				this.lastArea.remove(player);
 				this.lastArea.put(player, ato);

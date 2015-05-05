@@ -3,24 +3,19 @@ package cz.Sicka.AreaProtection.Configuration;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 
 import cz.Sicka.AreaProtection.AreaProtection;
+import cz.Sicka.AreaProtection.Manager;
 import cz.Sicka.AreaProtection.Area.Area;
-import cz.Sicka.AreaProtection.Area.AreaManager;
 import cz.Sicka.AreaProtection.Area.PlayerArea;
 import cz.Sicka.AreaProtection.Area.ServerArea;
 import cz.Sicka.AreaProtection.Area.WorldArea;
 import cz.Sicka.AreaProtection.Area.Area.AreaType;
-import cz.Sicka.AreaProtection.Chunks.ChunkAP;
-import cz.Sicka.AreaProtection.Chunks.ChunkAPManager;
 import cz.Sicka.AreaProtection.Flags.Flag;
 import cz.Sicka.AreaProtection.Flags.FlagManager;
 import cz.Sicka.AreaProtection.Lang.Lang;
@@ -94,7 +89,7 @@ public class ConfigurationManager {
 					fm.addFlag(f, c.getConfig().getBoolean("Options.Flags." + aflags ));
 				}
 				a.setAreaFlags(fm);
-				AreaManager.addWorldArea(w.getName(), a);
+				Manager.addWorldArea(a);
 			} catch (Exception e) {
 				AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
 				AreaProtection.LogMessage(Level.SEVERE, Lang.ErrorInLoadingSaveFile + w.getName());
@@ -145,7 +140,6 @@ public class ConfigurationManager {
 					int z2 = c.getConfig().getInt("Areas." + areaName + ".Data.Location.HighZ");
 					String world = c.getConfig().getString("Areas." + areaName + ".Data.Location.World");
 					
-					List<ChunkAP> chunks = ChunkAPManager.getChunkAPManagerForWorld(w).getChunkAPs(x1, z1, x2, z2);
 					if(AreaType.valueOf(c.getConfig().getString("Areas." + areaName + ".Data.AreaType")) == AreaType.SERVER_AREA){
 						String owner = c.getConfig().getString("Areas." + areaName + ".Data.Owner");
 						ServerArea sa = new ServerArea(areaName, owner, x1, y1, z1, x2, y2, z2, world);
@@ -159,11 +153,8 @@ public class ConfigurationManager {
 							fm.addFlag(f, c.getConfig().getBoolean("Areas." + areaName + ".Data.Flags." + aflags ));
 						}
 						a.setAreaFlags(fm);
-						AreaManager.addArea(areaName, a);
-						
-						for(ChunkAP ch : chunks){
-							ChunkAPManager.getChunkAPManagerForWorld(w).addAreaToChunkAP(ch, a.getName());;
-						}
+						Manager.addAreaToList(a);
+						Manager.getChunkStorageManager(world).addAreaToChunkStorages(a);
 					}else{
 						UUID uuid = UUID.fromString(c.getConfig().getString("Areas." + areaName + ".Data.Owner"));
 						PlayerArea pa = new PlayerArea(areaName, uuid, x1, y1, z1, x2, y2, z2, world);
@@ -177,11 +168,8 @@ public class ConfigurationManager {
 							fm.addFlag(f, c.getConfig().getBoolean("Areas." + areaName + ".Data.Flags." + aflags ));
 						}
 						a.setAreaFlags(fm);
-						AreaManager.addArea(areaName, a);
-						
-						for(ChunkAP ch : chunks){
-							ChunkAPManager.getChunkAPManagerForWorld(w).addAreaToChunkAP(ch, a.getName());;
-						}
+						Manager.addAreaToList(a);
+						Manager.getChunkStorageManager(world).addAreaToChunkStorages(a);
 					}
 				}
 			} catch (Exception e) {

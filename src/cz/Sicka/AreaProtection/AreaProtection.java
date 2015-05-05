@@ -13,7 +13,6 @@ import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 
 import cz.Sicka.AreaProtection.API.AreaProtectionManager;
-import cz.Sicka.AreaProtection.Chunks.ChunkAPManager;
 import cz.Sicka.AreaProtection.Commands.AreaProtectionCommandManager;
 import cz.Sicka.AreaProtection.Configuration.ConfigurationManager;
 import cz.Sicka.AreaProtection.Configuration.Debug;
@@ -51,7 +50,7 @@ public class AreaProtection extends JavaPlugin {
 		
 		enableWorlds.add("world");
 		
-		ChunkAPManager.init();
+		Manager.Initialization();
 		deb = new Debug();
 		
 		c = new ConfigurationManager(plugin);

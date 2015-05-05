@@ -12,4 +12,13 @@ public class Utils {
 	    }
 	    return true;
 	}
+	
+	public static boolean isBoolean(String s) {
+	    try { 
+	        Boolean.parseBoolean(s);
+	    } catch(NullPointerException e) {
+	        return false;
+	    }
+	    return true;
+	}
 }

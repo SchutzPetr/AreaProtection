@@ -2,6 +2,7 @@ package cz.Sicka.AreaProtection.HookedPlugins;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.bukkit.plugin.Plugin;
 
 import cz.Sicka.AreaProtection.AreaProtection;

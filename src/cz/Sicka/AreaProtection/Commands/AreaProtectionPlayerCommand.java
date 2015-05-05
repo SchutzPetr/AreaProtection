@@ -3,9 +3,8 @@ package cz.Sicka.AreaProtection.Commands;
 import org.bukkit.entity.Player;
 
 import cz.Sicka.AreaProtection.API.AreaProtectionAPI;
-import cz.Sicka.AreaProtection.Area.Area;
-import cz.Sicka.AreaProtection.Area.AreaManager;
 import cz.Sicka.AreaProtection.Commands.Commands.CreationCommand;
+import cz.Sicka.AreaProtection.Commands.Commands.PlayerSetCommand;
 import cz.Sicka.AreaProtection.Commands.Commands.RemoveCommand;
 import cz.Sicka.AreaProtection.Commands.Commands.SelectCommand;
 import cz.Sicka.AreaProtection.Commands.Commands.SelectionToolCommand;
@@ -47,11 +46,17 @@ public class AreaProtectionPlayerCommand {
 						player.sendMessage("err");
 					}
 				}
-				//-/area flag -p Sicka TestArea build t
-				//-/area flag -p Sicka build t
-				//-/area flag -a TestArea build t
-			}else if(args[0].equalsIgnoreCase("flag")){
-				//-/area remove <area>
+				//-/area pset <area> <hrac> build t
+			}else if(args[0].equalsIgnoreCase("pset")){
+				if(args.length == 4){
+					return PlayerSetCommand.onPlayerSetCommand(player, AreaProtectionAPI.getAreaProtectionManager().getAreaByLocation(player.getLocation()), args[1], args[2], args[3]);
+				}else if(args.length == 5){
+					
+				}else{
+					
+				}
+			}else if(args[0].equalsIgnoreCase("set")){
+				
 			}else if(args[0].equalsIgnoreCase("remove")){
 				if((args == null) || !(args.length == 2)){
 					return true;

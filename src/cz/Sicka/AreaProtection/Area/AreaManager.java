@@ -1,7 +1,7 @@
 package cz.Sicka.AreaProtection.Area;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -10,42 +10,48 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import cz.Sicka.AreaProtection.AreaProtection;
+import cz.Sicka.AreaProtection.Manager;
 import cz.Sicka.AreaProtection.Area.Area.AreaType;
+import cz.Sicka.AreaProtection.Chunks.ChunkStorageManager;
 import cz.Sicka.AreaProtection.Configuration.Configuration;
 import cz.Sicka.AreaProtection.Lang.Lang;
 
 public class AreaManager {
-	private static Map<String, Area> areas = new HashMap<String, Area>();
-	private static Map<String, Area> worldArea = new HashMap<String, Area>();
-	
-	public static void addArea(String name, Area a){
-		if(areas.containsKey(name)){
-			areas.remove(name);
+	public static List<Area> getPotencialCollisionAreas(Location loc, Location loc2) {
+		ChunkStorageManager chm = Manager.getChunkStorageManager(loc.getWorld().getName());
+		List<String> listChunkName = chm.calculateChunksAndgetChunkNames(loc.getBlockX(), loc.getBlockZ(), loc2.getBlockX(), loc2.getBlockZ());
+		List<Area> are = new ArrayList<Area>();
+		for(String chunkName : listChunkName){
+			for(String area : chm.getChunkStorage(chunkName).getAreas()){
+				are.add(Manager.getArea(area));
+			}
 		}
-		areas.put(name, a);
-	}
+		return are;
+    }
 	
-	public static Area getArea(String name){
-		return areas.get(name);
-	}
-
-	public static Map<String, Area> getAreas() {
-		return areas;
-	}
-	
-	public static void addWorldArea(String worldName, Area a){
-		if(worldArea.containsKey(worldName)){
-			worldArea.remove(worldName);
+	public static List<Area> getColisionAreas(Location loc1, Location loc2) {
+		List<Area> are = new ArrayList<Area>();
+		for(Area a : getPotencialCollisionAreas(loc1, loc2)){
+			if(checkColision(a, loc1, loc2)){
+				are.add(a);
+			}
 		}
-		worldArea.put(worldName, a);
+		return are;
 	}
 	
-	public static Area getWorldArea(String worldName){
-		return worldArea.get(worldName);
+	public static boolean checkColision(Area area, Location loc1, Location loc2) {
+		return isLocationInArea(area, loc1) || isLocationInArea(area, loc2);
 	}
-
-	public static Map<String, Area> getWorldArea() {
-		return worldArea;
+	
+	private static boolean isLocationInArea(Area area, Location loc) {
+		 if (area.getLowX() <= loc.getBlockX() && area.getHighX() >= loc.getBlockX()) {
+			 if (area.getLowZ() <= loc.getBlockZ() && area.getHighZ() >= loc.getBlockZ()) {
+				 if (area.getLowY() <= loc.getBlockY() && area.getHighY() >= loc.getBlockY()) {
+					 return true;
+				 }
+			 }
+		 }
+		 return false;
 	}
 	
 	public static void createArea(AreaType type, String owner, String areaName, Location loc1, Location loc2, String world){
@@ -54,20 +60,23 @@ public class AreaManager {
 		}
 	}
 	
-	public static void removeArea(Player player, Area a){
-		Configuration c = AreaProtection.getInstance().getConfigurationManager().getSaveAreaConfigs().get(a.getWorldName());
-		if(!areas.containsKey(a.getName()) || !c.getConfig().isSet("Areas." + a.getName())){
+	public static void removeArea(Player player, Area area){
+		Configuration c = AreaProtection.getInstance().getConfigurationManager().getSaveAreaConfigs().get(area.getWorldName());
+		if(!Manager.getAllAreas().containsKey(area.getName()) || !c.getConfig().isSet("Areas." + area.getName())){
 			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
 			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: AreaManager");
 			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: removeArea");
 			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Description: Area not exist!");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: AreasList:&a " + !areas.containsKey(a.getName()));
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Config:&a " + !c.getConfig().isSet("Areas." + a.getName()));
+			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: AreasList:&a " + !Manager.isAreaExist(area.getName()));
+			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Config:&a " + !c.getConfig().isSet("Areas." + area.getName()));
 
 			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
 			return;
 		}
-		c.getConfig().getConfigurationSection("Areas").set(a.getName(), null);
+		Manager.getChunkStorageManager(area.getWorldName()).removeAreaFromChunkStorages(area);
+		
+		Manager.removeArea(area.getName());
+		c.getConfig().getConfigurationSection("Areas").set(area.getName(), null);
 		c.saveConfig();
 	}
 	
@@ -102,6 +111,9 @@ public class AreaManager {
 			
 			c.saveConfig();
 			a.getAreaFlags();
+			Manager.addAreaToList(a);
+			
+			Manager.getChunkStorageManager(world).addAreaToChunkStorages(a);
 		}
 	}
 

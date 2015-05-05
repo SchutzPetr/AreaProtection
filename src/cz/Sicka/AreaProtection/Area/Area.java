@@ -1,5 +1,6 @@
 package cz.Sicka.AreaProtection.Area;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -291,6 +292,20 @@ public class Area {
 		}
 	}
 	
+	public Location getCenter() {
+		if(this.areaType == AreaType.PLAYER_AREA){
+			return playerArea.getCenter();
+		}else if(this.areaType == AreaType.SERVER_AREA){
+			return serverArea.getCenter();
+		}else{
+			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
+			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
+			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: getCenter");
+			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
+			return null;
+		}
+    }
+	
 	public AreaType getAreaType(){
 		return areaType;
 	}
@@ -298,6 +313,39 @@ public class Area {
 	public boolean allowAction(Flag flag){
 		return allowActionAreaFlag(flag);
 	}
+	/**
+	 * Note: Use only for PLAYER_AREA and SERVER_AREA
+	 */
+	public List<String> getChunks() {
+		if(this.areaType == AreaType.PLAYER_AREA){
+			return this.playerArea.getChunks();
+		}else if(this.areaType == AreaType.SERVER_AREA){
+			return this.serverArea.getChunks();
+		}else{
+			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
+			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
+			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: getChunks");
+			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
+			return null;
+		}
+	}
+	/**
+	 * Note: Use only for PLAYER_AREA and SERVER_AREA
+	 */
+	public void setChunks(List<String> chunks) {
+		if(this.areaType == AreaType.PLAYER_AREA){
+			this.playerArea.setChunks(chunks);
+		}else if(this.areaType == AreaType.SERVER_AREA){
+			this.serverArea.setChunks(chunks);
+		}else{
+			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
+			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
+			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: setChunks");
+			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
+			return;
+		}
+	}
+	
 	/**
 	 * Note: Use only for PLAYER_AREA and SERVER_AREA
 	 */
@@ -363,7 +411,7 @@ public class Area {
 	
 	public boolean allowAction(UUID player, Flag flag){
 		if(areaType == AreaType.PLAYER_AREA || areaType == AreaType.SERVER_AREA){
-			if(isPlayerOwner(player)){
+			if(isOwner(player)){
 				return true;
 			}else{
 				return allowActionPlayerFlag(player, flag);
@@ -373,7 +421,7 @@ public class Area {
 		}
 	}
 	
-	private boolean isPlayerOwner(UUID player){
+	public boolean isOwner(UUID player){
 		if(playerArea.getOwnerUUID().equals(player)){
 			return true;
 		}else{

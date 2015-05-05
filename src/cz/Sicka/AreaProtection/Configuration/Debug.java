@@ -11,7 +11,7 @@ import cz.Sicka.AreaProtection.AreaProtection;
 public class Debug {
 	File folder = new File(AreaProtection.getInstance().getDataFolder(), "debug.yml");
 	private Configuration conf;
-	DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+	DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	
 	public Debug(){
 		this.conf = new Configuration(this.folder);

@@ -1,7 +1,10 @@
 package cz.Sicka.AreaProtection.Area;
 
+import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 
 import cz.Sicka.AreaProtection.AreaProtection;
@@ -9,6 +12,8 @@ import cz.Sicka.AreaProtection.Utils.FlagsMap;
 
 public class PlayerArea {
 	private String areaName;
+	
+	private List<String> chunks;
 	
 	private int highX;
 	private int highY;
@@ -134,5 +139,17 @@ public class PlayerArea {
 	public UUID getOwnerUUID() {
 		return this.owner;
 	}
+
+	public List<String> getChunks() {
+		return chunks;
+	}
+
+	public void setChunks(List<String> chunkNames) {
+		this.chunks = chunkNames;
+	}
+	
+	public Location getCenter() {
+        return new Location(Bukkit.getWorld(getWorldName()), (getHighX() + getLowX()) / 2, (getHighY() + getLowY()) / 2, (getHighZ() + getLowZ()) / 2);
+    }
 }
 
