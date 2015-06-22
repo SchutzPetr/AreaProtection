@@ -31,6 +31,10 @@ public class Flag {
     	this.defaultAreaFlagValue = defaultAreaFlagValue;
     }
     
+    public void setDefaultAreaFlagValue(boolean value){
+    	this.defaultAreaFlagValue = value;
+    }
+    
     public void addChildrenFlag(Flag f){
     	children.add(f);
     }

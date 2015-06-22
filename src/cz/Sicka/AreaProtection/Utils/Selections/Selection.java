@@ -48,10 +48,9 @@ public class Selection {
 	public void SelectFirstPosition(Location firstLocation){
 		if(this.loc1 != null){
 			block1.getState().update();
-			this.central.getState().update();
+			if(this.central != null)this.central.getState().update();
 			h1.delete();
 			if(cent != null)cent.delete();
-			SelectionManager.removeProtectedLocation(this.loc1);
 		}
 		if(this.loc2 != null){
 			if(this.loc2.equals(firstLocation)){
@@ -68,21 +67,15 @@ public class Selection {
 		this.loc1 = firstLocation;
 		this.block1 = firstLocation.getBlock();
 		delaySendBlockChange(firstLocation, Material.GLOWSTONE);
-		SelectionManager.addProtectedLocation(firstLocation);
 		player.playSound(player.getLocation(), Sound.LEVEL_UP, 20, 1);
 		printSelectionInfo();
 		delayClear();
 	}
 	
 	public void printSelectionInfo(){
-		System.out.print(isSelectionComplete());
 		if(!isSelectionComplete()){
 			return;
 		}
-		System.out.print(isSelectionComplete());
-		System.out.print(getCenter().getBlockX());
-		System.out.print(getCenter().getBlockY());
-		System.out.print(getCenter().getBlockZ());
 		this.central = getCenter().getBlock();
 		delaySendBlockChange(getCenter(), Material.GLOWSTONE);
 		cent = HologramsAPI.createHologram(AreaProtection.getInstance(), getCenter().clone().add(0, 3, 0));
@@ -91,6 +84,7 @@ public class Selection {
 		cent.appendTextLine(Replacer.replace("&3X: " + getCenter().getBlockX()));
 		cent.appendTextLine(Replacer.replace("&3Y: " + getCenter().getBlockY()));
 		cent.appendTextLine(Replacer.replace("&3Z: " + getCenter().getBlockZ()));
+		//LocationSerialization locser = new LocationSerialization(this.loc1.getBlockX(), this.loc1.getBlockY(), this.loc1.getBlockZ(), this.loc2.getBlockX(), this.loc2.getBlockY(), this.loc2.getBlockZ(), this.loc1.getWorld());
 	}
 	
 	public boolean isSelectionComplete(){
@@ -139,8 +133,7 @@ public class Selection {
 			h2.delete();
 			if(cent != null)cent.delete();
 			block2.getState().update();
-			this.central.getState().update();
-			SelectionManager.removeProtectedLocation(this.loc2);
+			if(this.central != null)this.central.getState().update();
 		}
 		if(this.loc1 != null){
 			if(this.loc1.equals(secondLocation)){
@@ -157,7 +150,6 @@ public class Selection {
 		this.loc2 = secondLocation;
 		this.block2 = secondLocation.getBlock();
 		delaySendBlockChange(secondLocation, Material.GLOWSTONE);
-		SelectionManager.addProtectedLocation(secondLocation);
 		player.playSound(player.getLocation(), Sound.LEVEL_UP, 20, 1);
 		printSelectionInfo();
 		delayClear();
@@ -166,17 +158,17 @@ public class Selection {
 	public void clear(){
 		this.block1.getState().update();
 		this.block2.getState().update();
-		this.central.getState().update();
+		if(this.central != null)this.central.getState().update();
 		if(h1 != null)h1.delete();
 		if(h2 != null)h2.delete();
 		if(cent != null)cent.delete();
 	}
 
-	public Location getFirstPosition(Player player) {
+	public Location getFirstPosition() {
 		return this.loc1;
 	}
 
-	public Location getSecondPosition(Player player) {
+	public Location getSecondPosition() {
 		return this.loc2;
 	}
 }

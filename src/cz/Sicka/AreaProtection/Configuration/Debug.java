@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import cz.Sicka.AreaProtection.AreaProtection;
 
@@ -17,10 +18,15 @@ public class Debug {
 		this.conf = new Configuration(this.folder);
 	}
 	
+	@Deprecated
 	public void log(String error){
 		Date today = Calendar.getInstance().getTime();        
 		String reportDate = df.format(today);
 		this.conf.getConfig().set("Report Date: " + reportDate, error);
+	}
+	
+	public void log(List<String> error){
+		
 	}
 	
 	public void save(){

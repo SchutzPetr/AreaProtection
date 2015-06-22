@@ -30,5 +30,9 @@ public class CompatibilityManager {
 	 public static void sendActionBar(Player p, String msg) {
 		 compability.sendActionBar(p, msg);
 	 }
+	 
+	 public static void send(Player player, String message){
+		 compability.send(player, message);;
+	 }
 	
 }

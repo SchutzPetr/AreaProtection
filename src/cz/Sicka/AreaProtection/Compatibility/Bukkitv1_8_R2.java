@@ -14,4 +14,8 @@ public class Bukkitv1_8_R2 implements Compatibility{
 		PacketPlayOutChat ppoc = new PacketPlayOutChat(icbc, (byte)2);
 		((CraftPlayer)p).getHandle().playerConnection.sendPacket(ppoc);
 	}
+	
+	public void send(Player player, String message){
+	    ((CraftPlayer)player).getHandle().playerConnection.sendPacket(new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a(message)));
+	}
 }

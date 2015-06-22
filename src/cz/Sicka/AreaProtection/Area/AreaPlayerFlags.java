@@ -27,6 +27,12 @@ public class AreaPlayerFlags {
 		}
 	}
 	
+	public void removePlayerFlag(UUID playerUniqueId, Flag flag){
+		if(this.areapFlags.containsKey(playerUniqueId)){
+			this.areapFlags.get(playerUniqueId).removeFlag(flag);
+		}
+	}
+	
 	public FlagsMap getPlayerFlags(UUID playerUniqueId){
 		if(this.areapFlags.containsKey(playerUniqueId)){
 			return this.areapFlags.get(playerUniqueId);

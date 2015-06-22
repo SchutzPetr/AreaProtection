@@ -24,9 +24,9 @@ public class FlagManager {
     public static final Flag ENDERMANPICKUP = new Flag("EndermanPickup", FlagType.AREA_ONLY, BUILD, "EndermanPickup", false);
     public static final Flag TRAMPLE = new Flag("Trample", FlagType.ANY, BUILD, "Trample", false);
 
-    public static final Flag BUCKET = new Flag("Bucket", FlagType.ANY, BUILD, "Bucket", true);
-    public static final Flag LAVABUCKET = new Flag("LavaBucket", FlagType.ANY, BUCKET, "LavaBucket", true);
-    public static final Flag WATERBUCKET = new Flag("WaterBucket", FlagType.ANY, BUCKET, "WaterBucket", true);
+    public static final Flag BUCKET = new Flag("Bucket", FlagType.ANY, BUILD, "Bucket", false);
+    public static final Flag LAVABUCKET = new Flag("LavaBucket", FlagType.ANY, BUCKET, "LavaBucket", false);
+    public static final Flag WATERBUCKET = new Flag("WaterBucket", FlagType.ANY, BUCKET, "WaterBucket", false);
 
     public static final Flag FIRESPREAD = new Flag("FireSpread", FlagType.AREA_ONLY, null, "FireSpread", false);
     public static final Flag IGNITE = new Flag("Ignite", FlagType.ANY, null, "Ignite", false);
@@ -68,8 +68,8 @@ public class FlagManager {
     public static final Flag WATERFLOW = new Flag("WaterFlow", FlagType.AREA_ONLY, FLOW, "WaterFlow", true);
 
     public static final Flag SPAWN = new Flag("Spawn", FlagType.AREA_ONLY, null, "Spawn", true);
-    public static final Flag MONSTERSPAWN = new Flag("MonsterSpawn", FlagType.AREA_ONLY, SPAWN, "MonsterSpawn", true);
-    public static final Flag ANIMALSPAWN = new Flag("AnimalSpawn", FlagType.AREA_ONLY, SPAWN, "AnimalSpawn", true);
+    public static final Flag MONSTERS = new Flag("Monsters", FlagType.AREA_ONLY, SPAWN, "Monster", true);
+    public static final Flag ANIMALS = new Flag("Animals", FlagType.AREA_ONLY, SPAWN, "Animal", true);
 
     public static final Flag EXPLOSION = new Flag("Explosion", FlagType.AREA_ONLY, null, "Explosion", false);
     public static final Flag BEDEXPLOSION = new Flag("BedExplosion", FlagType.AREA_ONLY, EXPLOSION, "BedExplosion", false);
@@ -84,6 +84,8 @@ public class FlagManager {
 	
 	private static Map<String, Flag> validFlags;
 	private static Map<String, Flag> areaFlags;
+	
+	private static Map<String, Boolean> defaultFlags;
 
 	public static Flag getFlag(String flag) {
         return validFlags.get(flag.toLowerCase());
@@ -111,7 +113,8 @@ public class FlagManager {
 		return validFlags;
 	}
 	
-	public FlagManager(){
+	public FlagManager(Map<String, Boolean> map){
+		if(map != null)setDefaultFlags(map);
 		validFlags = new HashMap<String, Flag>();
 		areaFlags = new HashMap<String, Flag>();
 		
@@ -178,8 +181,8 @@ public class FlagManager {
         addFlag(LAVAFLOW);
 
         addFlag(SPAWN);
-        addFlag(MONSTERSPAWN);
-        addFlag(ANIMALSPAWN);
+        addFlag(MONSTERS);
+        addFlag(ANIMALS);
 
         addFlag(EXPLOSION);
         addFlag(BEDEXPLOSION);
@@ -191,6 +194,17 @@ public class FlagManager {
         addFlag(MOVE);
         addFlag(TELEPORT);
 		
+	}
+
+	public static Map<String, Boolean> getDefaultFlags() {
+		return defaultFlags;
+	}
+
+	public static void setDefaultFlags(Map<String, Boolean> defaultFlags) {
+		FlagManager.defaultFlags = defaultFlags;
+		for(String f : defaultFlags.keySet()){
+			getFlag(f).setDefaultAreaFlagValue(defaultFlags.get(f));
+		}
 	}
 
 }

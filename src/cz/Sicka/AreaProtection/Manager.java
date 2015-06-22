@@ -7,17 +7,20 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 
 import cz.Sicka.AreaProtection.Area.Area;
+import cz.Sicka.AreaProtection.Area.WorldArea;
 import cz.Sicka.AreaProtection.Chunks.ChunkStorageManager;
 import cz.Sicka.AreaProtection.Lang.Lang;
+import cz.Sicka.AreaProtection.Utils.Utils;
 
 public class Manager {
 	private static Map<String, ChunkStorageManager> World_ChunkStorageManagers = new HashMap<String, ChunkStorageManager>();
 	private static Map<String, Area> areas = new HashMap<String, Area>();
-	private static Map<String, List<String>> world_Area = new HashMap<String, List<String>>();
-	private static Map<String, Area> worldAreas = new HashMap<String, Area>();
+	private static Map<String, List<String>> worldAreas = new HashMap<String, List<String>>();
+	private static Map<String, WorldArea> world_Area = new HashMap<String, WorldArea>();
 	
 	/**
 	 * Note: Init when server start!
@@ -98,25 +101,25 @@ public class Manager {
 	}
 	
 	public static void addAreaToList(Area area){
-		if(!getAllAreas().containsKey(area.getName())){
-			getAllAreas().put(area.getName(), area);
+		if(!getAllAreas().containsKey(area.getAreaName())){
+			getAllAreas().put(area.getAreaName(), area);
 		}else{
 			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
 			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Manager");
 			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: addAreaToList");
 			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: SubMetod ID: " + 1);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: description: Area " + area.getName() + "already exist");
+			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: description: Area " + area.getAreaName() + "already exist");
 			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
 		}
 		if(getAreasInWorlds().containsKey(area.getWorldName())){
-			if(!getAreasInWorlds().get(area.getWorldName()).contains(area.getName())){
-				getAreasInWorlds().get(area.getWorldName()).add(area.getName());
+			if(!getAreasInWorlds().get(area.getWorldName()).contains(area.getAreaName())){
+				getAreasInWorlds().get(area.getWorldName()).add(area.getAreaName());
 			}else{
 				AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
 				AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Manager");
 				AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: addAreaToList");
 				AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: SubMetod ID: " + 2);
-				AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: description: Area " + area.getName() + "already exist");
+				AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: description: Area " + area.getAreaName() + "already exist");
 				AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
 			}
 		}else{
@@ -129,13 +132,13 @@ public class Manager {
 		}
 	}
 	
-	public static void addWorldArea(Area area){
-		worldAreas.put(area.getWorldName(), area);
+	public static void addWorldArea(WorldArea area){
+		world_Area.put(area.getWorldName(), area);
 	}
 	
-	public static Area getWorldArea(String worldName){
-		if(worldAreas.containsKey(worldName)){
-			return worldAreas.get(worldName);
+	public static WorldArea getWorldArea(String worldName){
+		if(world_Area.containsKey(worldName)){
+			return world_Area.get(worldName);
 		}else{
 			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
 			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Manager");
@@ -150,11 +153,15 @@ public class Manager {
 		return areas;
 	}
 	
-	public static Map<String, List<String>> getAreasInWorlds() {
-		return world_Area;
+	private static Map<String, List<String>> getAreasInWorlds() {
+		return worldAreas;
 	}
 	
 	public static List<String> getAreasInWorld(String worldName) {
 		return getAreasInWorlds().get(worldName);
+	}
+	
+	public static Location getDefaultTeleportLocation(Area area){
+		return Utils.getLocationAboveGround(area.getCenter());
 	}
 }

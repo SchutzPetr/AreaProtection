@@ -5,9 +5,12 @@ import cz.Sicka.AreaProtection.Utils.FlagsMap;
 public class WorldArea{
 	private String worldName;
 	private String areaName;
+	private String owner;
 	private FlagsMap worldFlags;
+	private AreaType type = AreaType.WORLD_AREA;
 	
-	public WorldArea(String worldName, String areaName){
+	public WorldArea(String worldName, String areaName, String owner){
+		this.owner = owner;
 		this.worldName = worldName;
 		this.areaName = areaName;
 	}
@@ -26,5 +29,13 @@ public class WorldArea{
 
 	public String getAreaName() {
 		return areaName;
+	}
+
+	public AreaType getType() {
+		return type;
+	}
+
+	public String getOwner() {
+		return owner;
 	}
 }

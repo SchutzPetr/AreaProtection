@@ -2,434 +2,218 @@ package cz.Sicka.AreaProtection.Area;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 
 import cz.Sicka.AreaProtection.AreaProtection;
+import cz.Sicka.AreaProtection.Area.AreaType;
+import cz.Sicka.AreaProtection.Area.AreaPlayerFlags;
 import cz.Sicka.AreaProtection.Flags.Flag;
 import cz.Sicka.AreaProtection.Flags.FlagManager;
-import cz.Sicka.AreaProtection.Lang.Lang;
 import cz.Sicka.AreaProtection.Utils.FlagsMap;
 
 public class Area {
-	private AreaType areaType;
-	private PlayerArea playerArea;
-	private ServerArea serverArea;
-	private WorldArea worldArea;
+	private String areaName;
 	
-	public Area(PlayerArea pa){
-		this.areaType = AreaType.PLAYER_AREA;
-		this.playerArea = pa;
+	private List<String> chunks;
+	
+	private int highX;
+	private int highY;
+	private int highZ;
+    
+	private int lowX;
+	private int lowY;
+	private int lowZ;
+	
+	private Location teleportLocation;
+	
+	private String world;
+	
+	private UUID owner;
+	private AreaPlayerFlags areaPlayerFlags;
+	
+	private long CreationDate;
+	private FlagsMap areaFlags;
+	
+	private AreaType type;
+	private String ownerName;
+
+	public Area(String areaName, String owner, AreaType type, int loc_1_x, int loc_1_y, int loc_1_z, int loc_2_x, int loc_2_y, int loc_2_z, String worldName){
+		this.areaName = areaName;
+		this.owner = UUID.fromString(owner);
+		this.ownerName = getOwner().getName();
+		this.type = type;
+		serialize(loc_1_x, loc_1_y, loc_1_z, loc_2_x, loc_2_y, loc_2_z);
 		
-		this.serverArea = null;
-		this.worldArea = null;
+		this.world = worldName;
+		
+		this.areaPlayerFlags = new AreaPlayerFlags();
 	}
 	
-	public Area(ServerArea sa){
-		this.areaType = AreaType.SERVER_AREA;
-		this.serverArea = sa;
-		
-		this.playerArea = null;
-		this.worldArea = null;
-	}
-	
-	public Area(WorldArea wa){
-		this.areaType = AreaType.WORLD_AREA;
-		this.worldArea = wa;
-		
-		this.serverArea = null;
-		this.playerArea = null;
-	}
-	
-	public String getWorldName() {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			return playerArea.getWorldName();
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			return serverArea.getWorldName();
+	public void serialize(int loc_1_x, int loc_1_y, int loc_1_z, int loc_2_x, int loc_2_y, int loc_2_z){
+		if(loc_1_x > loc_2_x){
+			highX = loc_1_x;
+			lowX = loc_2_x;
 		}else{
-			return worldArea.getWorldName();
+			highX = loc_2_x;
+			lowX = loc_1_x;
+		}
+		if(loc_1_y > loc_2_y){
+			highY = loc_1_y;
+			lowY = loc_2_y;
+		}else{
+			highY = loc_2_y;
+			lowY = loc_1_y;
+		}
+		if(loc_1_z > loc_2_z){
+			highZ = loc_1_z;
+			lowZ = loc_2_z;
+		}else{
+			highZ = loc_2_z;
+			lowZ = loc_1_z;
 		}
 	}
 
-	public String getName() {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			return playerArea.getAreaName();
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			return serverArea.getAreaName();
-		}else{
-			return worldArea.getAreaName();
-		}
+	public int getHighX() {
+        return highX;
+    }
+
+    public int getHighY() {
+        return highY;
+    }
+
+    public int getHighZ() {
+        return highZ;
+    }
+
+    public int getLowX() {
+        return lowX;
+    }
+
+    public int getLowY() {
+        return lowY;
+    }
+
+    public int getLowZ() {
+        return lowZ;
+    }
+    
+    public boolean containsLocation(Location loc) {
+		return containsLocation(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
 	}
+    
+    public boolean containsLocation(int x, int y, int z) {
+        if (lowX <= x && highX >= x) {
+            if (lowZ <= z && highZ >= z) {
+                if (lowY <= y && highY >= y) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 	
+	public String getWorldName(){
+		return world;
+	}
+
+	public String getAreaName() {
+		return areaName;
+	}
+
 	public AreaPlayerFlags getAreaPlayerFlags() {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			return playerArea.getAreaPlayerFlags();
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			return serverArea.getAreaPlayerFlags();
-		}else{
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: getAreaPlayerFlags");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return null;
-		}
+		return areaPlayerFlags;
 	}
-	
+
 	public void setAreaPlayerFlags(AreaPlayerFlags areaPlayerFlags) {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			playerArea.setAreaPlayerFlags(areaPlayerFlags);
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			serverArea.setAreaPlayerFlags(areaPlayerFlags);
-		}else{
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: setAreaPlayerFlags");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return;
-		}
+		this.areaPlayerFlags = areaPlayerFlags;
 	}
-	
-	public void setAreaFlags(FlagsMap areaFlags) {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			playerArea.setAreaFlags(areaFlags);
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			serverArea.setAreaFlags(areaFlags);
-		}else{
-			worldArea.setAreaFlags(areaFlags);
-			return;
-		}
-	}
-	
+
 	public long getCreationDate() {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			return playerArea.getCreationDate();
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			return serverArea.getCreationDate();
-		}else{
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: getCreationDate");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return 0;
-		}
+		return CreationDate;
 	}
-	
+
 	public void setCreationDate(long creationDate) {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			playerArea.setCreationDate(creationDate);
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			serverArea.setCreationDate(creationDate);
-		}else{
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: setCreationDate");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return;
-		}
+		CreationDate = creationDate;
 	}
-	
+
 	public FlagsMap getAreaFlags() {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			return playerArea.getAreaFlags();
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			return serverArea.getAreaFlags();
-		}else{
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: getAreaFlags");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return null;
-		}
+		return areaFlags;
 	}
-	
-	public OfflinePlayer getOfflineOwner() {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			return playerArea.getOfflineOwner();
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: getOfflineOwner");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return null;
-		}else{
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: getOfflineOwner");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return null;
-		}
+
+	public void setAreaFlags(FlagsMap areaFlags) {
+		this.areaFlags = areaFlags;
+	}
+
+	public OfflinePlayer getOwner() {
+		return AreaProtection.getInstance().getServer().getOfflinePlayer(this.owner);
 	}
 	
 	public UUID getOwnerUUID() {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			return playerArea.getOwnerUUID();
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			return null;
-		}else{
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: getOwnerUUID");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return null;
-		}
+		return this.owner;
 	}
-	
-	public String getOwnerName() {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			return playerArea.getOfflineOwner().getName();
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			return serverArea.getOwnerName();
-		}else{
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: getOwnerName");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return "Nature";
-		}
+
+	public List<String> getChunks() {
+		return chunks;
 	}
-	
-	public int getLowX() {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			return playerArea.getLowX();
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			return serverArea.getLowX();
-		}else{
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: getLowX");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return 0;
-		}
-	}
-	
-	public int getLowY() {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			return playerArea.getLowY();
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			return serverArea.getLowY();
-		}else{
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: getLowY");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return 0;
-		}
-	}
-	
-	public int getLowZ() {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			return playerArea.getLowZ();
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			return serverArea.getLowZ();
-		}else{
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: getLowZ");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return 0;
-		}
-	}
-	
-	public int getHighX() {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			return playerArea.getHighX();
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			return serverArea.getHighX();
-		}else{
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: getHighX");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return 0;
-		}
-	}
-	
-	public boolean containsLocation(int x, int y, int z) {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			return playerArea.containsLocation(x, y, z);
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			return serverArea.containsLocation(x, y, z);
-		}else{
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: containsLocation");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return true;
-		}
-	}
-	
-	public boolean containsLocation(Location loc) {
-		return containsLocation(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-	}
-	
-	public int getHighY() {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			return playerArea.getHighY();
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			return serverArea.getHighY();
-		}else{
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: getHighY");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return 0;
-		}
-	}
-	
-	public int getHighZ() {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			return playerArea.getHighZ();
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			return serverArea.getHighZ();
-		}else{
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: getHighZ");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return 0;
-		}
+
+	public void setChunks(List<String> chunkNames) {
+		this.chunks = chunkNames;
 	}
 	
 	public Location getCenter() {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			return playerArea.getCenter();
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			return serverArea.getCenter();
-		}else{
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: getCenter");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return null;
-		}
+        return new Location(Bukkit.getWorld(getWorldName()), (getHighX() + getLowX()) / 2, (getHighY() + getLowY()) / 2, (getHighZ() + getLowZ()) / 2);
     }
 	
-	public AreaType getAreaType(){
-		return areaType;
-	}
-	
-	public boolean allowAction(Flag flag){
-		return allowActionAreaFlag(flag);
-	}
-	/**
-	 * Note: Use only for PLAYER_AREA and SERVER_AREA
-	 */
-	public List<String> getChunks() {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			return this.playerArea.getChunks();
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			return this.serverArea.getChunks();
-		}else{
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: getChunks");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return null;
-		}
-	}
-	/**
-	 * Note: Use only for PLAYER_AREA and SERVER_AREA
-	 */
-	public void setChunks(List<String> chunks) {
-		if(this.areaType == AreaType.PLAYER_AREA){
-			this.playerArea.setChunks(chunks);
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			this.serverArea.setChunks(chunks);
-		}else{
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Area");
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: setChunks");
-			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
-			return;
-		}
-	}
-	
-	/**
-	 * Note: Use only for PLAYER_AREA and SERVER_AREA
-	 */
+	@Deprecated
 	private boolean allowActionPlayerFlag(UUID uuid, Flag flag){
-		if(this.areaType == AreaType.PLAYER_AREA){
-			if(playerArea.getAreaPlayerFlags().containsPlayer(uuid)){
-				FlagsMap fm = playerArea.getAreaPlayerFlags().getPlayerFlags(uuid);
-				if(fm.getFlags().contains(flag.getName())){
-					return fm.getFlagValue(flag.getName());
-				}else{
-					return allowActionInPLAYER_AREA(flag);
-				}
+		if(getAreaPlayerFlags().containsPlayer(uuid)){
+			FlagsMap fm = getAreaPlayerFlags().getPlayerFlags(uuid);
+			if(fm.getFlags().contains(flag.getName())){
+				return fm.getFlagValue(flag.getName());
 			}else{
-				return allowActionInPLAYER_AREA(flag);
+				return allowAction(flag);
 			}
 		}else{
-			if(serverArea.getAreaPlayerFlags().containsPlayer(uuid)){
-				FlagsMap fm = serverArea.getAreaPlayerFlags().getPlayerFlags(uuid);
-				if(fm.getFlags().contains(flag.getName())){
-					return fm.getFlagValue(flag.getName());
-				}else{
-					return allowActionInSERVER_AREA(flag);
-				}
-			}else{
-				return allowActionInSERVER_AREA(flag);
-			}
+			return allowAction(flag);
 		}
 	}
-	
-	private boolean allowActionAreaFlag(Flag flag){
-		if(this.areaType == AreaType.PLAYER_AREA){
-			return allowActionInPLAYER_AREA(flag);
-		}else if(this.areaType == AreaType.SERVER_AREA){
-			return allowActionInSERVER_AREA(flag);
-		}else{
-			return allowActionInWORLD_AREA(flag);
-		}
-	}
-	
-	private boolean allowActionInPLAYER_AREA(Flag flag){
-		if(playerArea.getAreaFlags().getFlags().contains(flag.getName())){
-			return playerArea.getAreaFlags().getFlagValue(flag.getName());
+	@Deprecated
+	public boolean allowAction(Flag flag){
+		if(getAreaFlags().getFlags().contains(flag.getName())){
+			return getAreaFlags().getFlagValue(flag.getName());
 		}else{
 			return FlagManager.getAreaFlag(flag.getName()).getDefaultAreaFlagValue();
 		}
 	}
-	
-	private boolean allowActionInSERVER_AREA(Flag flag){
-		if(serverArea.getAreaFlags().getFlags().contains(flag.getName())){
-			return serverArea.getAreaFlags().getFlagValue(flag.getName());
-		}else{
-			return FlagManager.getAreaFlag(flag.getName()).getDefaultAreaFlagValue();
-		}
-	}
-	
-	private boolean allowActionInWORLD_AREA(Flag flag){
-		if(worldArea.getWorldFlags().getFlags().contains(flag.getName())){
-			return worldArea.getWorldFlags().getFlagValue(flag.getName());
-		}else{
-			return true;
-		}
-	}
-	
+	@Deprecated
 	public boolean allowAction(UUID player, Flag flag){
-		if(areaType == AreaType.PLAYER_AREA || areaType == AreaType.SERVER_AREA){
-			if(isOwner(player)){
-				return true;
-			}else{
-				return allowActionPlayerFlag(player, flag);
-			}
+		if(isOwner(player)){
+			return true;
 		}else{
-			return allowActionInWORLD_AREA(flag);
+			return allowActionPlayerFlag(player, flag);
 		}
 	}
 	
 	public boolean isOwner(UUID player){
-		if(playerArea.getOwnerUUID().equals(player)){
-			return true;
-		}else{
-			return false;
-		}
+		return getOwnerUUID().equals(player);
 	}
-	
-	public enum AreaType {
-        WORLD_AREA, PLAYER_AREA, SERVER_AREA;
-    }
+
+	public AreaType getType() {
+		return type;
+	}
+
+	public Location getTeleportLocation() {
+		return teleportLocation;
+	}
+
+	public void setTeleportLocation(Location teleportLocation) {
+		this.teleportLocation = teleportLocation;
+	}
+
+	public String getOwnerName() {
+		return ownerName;
+	}
 }

@@ -44,7 +44,7 @@ public class ChunkStorage {
 	}
 	
 	public void addArea(Area area){
-		addArea(area.getName());
+		addArea(area.getAreaName());
 	}
 	
 	public void addArea(String area){
@@ -60,7 +60,7 @@ public class ChunkStorage {
 	}
 	
 	public void removeArea(Area area){
-		removeArea(area.getName());
+		removeArea(area.getAreaName());
 	}
 	
 	public void removeArea(String area){
@@ -77,7 +77,7 @@ public class ChunkStorage {
 	}
 	
 	public boolean containsArea(Area area){
-		return containsArea(area.getName());
+		return containsArea(area.getAreaName());
 	}
 	
 	public boolean containsArea(String area){

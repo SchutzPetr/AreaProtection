@@ -1,12 +1,13 @@
 package cz.Sicka.AreaProtection.Chunks;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.bukkit.World;
 
 import cz.Sicka.AreaProtection.Area.Area;
+import cz.Sicka.AreaProtection.Utils.ChunkCalculate;
 
 public class ChunkStorageManager {
 	private Map<String, ChunkStorage> ChunkStorage = new HashMap<String, ChunkStorage>();
@@ -22,7 +23,7 @@ public class ChunkStorageManager {
 	}
 	
 	public void addAreaToChunkStorages(Area area){
-		List<String> s = calculateChunksAndgetChunkNames(area.getHighX(), area.getHighZ(), area.getLowX(), area.getLowZ());
+		List<String> s = ChunkCalculate.calculateChunksAndgetChunkNames(area.getHighX(), area.getHighZ(), area.getLowX(), area.getLowZ());
 		area.setChunks(s);
 		for(String chunkname : s){
 			getChunkStorage(chunkname).addArea(area);
@@ -80,35 +81,4 @@ public class ChunkStorageManager {
 		}
 		return ch;
 	}*/
-	
-	
-	public List<String> calculateChunksAndgetChunkNames(int x1, int z1, int x2, int z2){
-		List<String> ch = new ArrayList<String>();
-		if(x1 > x2){
-			for(int u = x1 >> 4; u >= x2 >> 4; u--){
-				if(z1 > z2){
-					for(int uu = z1 >> 4; uu >= z2 >> 4; uu--){
-						ch.add(u + ", " + uu);
-					}
-				}else{
-					for(int uu = z1 >> 4; uu <= z2 >> 4; uu++){
-						ch.add(u + ", " + uu);
-					}
-				}
-			}
-		}else{
-			for(int u = x1 >> 4; u <= x2 >> 4; u++){
-				if(z1 > z2){
-					for(int uu = z1 >> 4; uu <= z2 >> 4; uu--){
-						ch.add(u + ", " + uu);
-					}
-				}else{
-					for(int uu = z1 >> 4; uu <= z2 >> 4; uu++){
-						ch.add(u + ", " + uu);
-					}
-				}
-			}
-		}
-		return ch;
-	}
 }

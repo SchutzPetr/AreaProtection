@@ -10,7 +10,7 @@ import cz.Sicka.AreaProtection.HookedPlugins.Plugins.HolographicDisplaysHookedPl
 import cz.Sicka.AreaProtection.HookedPlugins.Plugins.VaultHookedPlugin;
 
 public class HookedPluginsManager {
-	private AreaProtection plugin;
+	//private AreaProtection plugin;
 	
 	public static List<Plugin> pluginList;
 	private VaultHookedPlugin vault;
@@ -18,7 +18,7 @@ public class HookedPluginsManager {
 	
 	
 	public HookedPluginsManager(AreaProtection instance){
-		plugin = instance;
+		//plugin = instance;
 		pluginList = new ArrayList<Plugin>();
 		vault = new VaultHookedPlugin();
 		hdp = new HolographicDisplaysHookedPlugin();

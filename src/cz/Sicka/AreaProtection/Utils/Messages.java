@@ -13,4 +13,8 @@ public class Messages {
 	public static void sendActionBar(Player p, String message){
 		CompatibilityManager.sendActionBar(p, Replacer.replace(message));
 	}
+	
+	public static void sendRawMessage(Player player, String message){
+		CompatibilityManager.send(player, message);
+	}
 }
