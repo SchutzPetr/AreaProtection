@@ -1,7 +1,9 @@
 package cz.Sicka.AreaProtection.Configuration;
 
 import java.io.File;
+
 import cz.Sicka.AreaProtection.AreaProtection;
+import cz.Sicka.Core.Utils.Configuration.Configuration;
 
 public class LangConfiguration {
 	File folder = new File(AreaProtection.getInstance().getDataFolder(), "language.yml");

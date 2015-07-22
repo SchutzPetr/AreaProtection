@@ -15,12 +15,11 @@ import cz.Sicka.AreaProtection.AreaProtection;
 import cz.Sicka.AreaProtection.Manager;
 import cz.Sicka.AreaProtection.Area.Area;
 import cz.Sicka.AreaProtection.Area.AreaPlayerFlags;
-import cz.Sicka.AreaProtection.Area.AreaType;
-import cz.Sicka.AreaProtection.Configuration.Configuration;
 import cz.Sicka.AreaProtection.Flags.Flag;
 import cz.Sicka.AreaProtection.Flags.FlagManager;
 import cz.Sicka.AreaProtection.Lang.Lang;
 import cz.Sicka.AreaProtection.Utils.FlagsMap;
+import cz.Sicka.Core.Utils.Configuration.Configuration;
 
 public class LoadArea {
 	private Map<String, Configuration> worldConfig = new HashMap<String, Configuration>();
@@ -48,13 +47,13 @@ public class LoadArea {
 				}
 			}
 			try{
-				Configuration c = new Configuration(worldFile);
+				Configuration conf = new Configuration(worldFile);
 				if(newFile) {
-					c.getConfig().set("Version", AreaProtection.getInstance().Version);
-					c.getConfig().createSection("Areas");
-					c.saveConfig();
+					conf.getConfig().set("Version", AreaProtection.getInstance().Version);
+					conf.getConfig().createSection("Areas");
+					conf.saveConfig();
 				}
-				this.worldConfig.put(world.getName(), c);
+				this.worldConfig.put(world.getName(), conf);
 			} catch(Exception e){
 				
 			}
@@ -69,55 +68,66 @@ public class LoadArea {
 		}	
 	}
 
-	public void loadAreas(Configuration c){
-		for(String areaName : c.getConfig().getConfigurationSection("Areas").getKeys(false)){
-			loadArea(areaName, c);
+	public void loadAreas(Configuration conf){
+		for(String areaName : conf.getConfig().getConfigurationSection("Areas").getKeys(false)){
+			loadArea(areaName, conf);
 		}
 	}
 	
-	public void loadArea(String areaName, Configuration c){
+	public void loadArea(String areaName, String world){
+		loadArea(areaName, this.worldConfig.get(world));
+	}
+	
+	public void loadArea(String areaName, Configuration conf){
 		try{
-			int x1 = c.getConfig().getInt("Areas." + areaName + ".Data.Location.LowX");
-			int y1 = c.getConfig().getInt("Areas." + areaName + ".Data.Location.LowY");
-			int z1 = c.getConfig().getInt("Areas." + areaName + ".Data.Location.LowZ");
+			int x1 = conf.getConfig().getInt("Areas." + areaName + ".Data.Location.LowX");
+			int y1 = conf.getConfig().getInt("Areas." + areaName + ".Data.Location.LowY");
+			int z1 = conf.getConfig().getInt("Areas." + areaName + ".Data.Location.LowZ");
 			
-			int x2 = c.getConfig().getInt("Areas." + areaName + ".Data.Location.HighX");
-			int y2 = c.getConfig().getInt("Areas." + areaName + ".Data.Location.HighY");
-			int z2 = c.getConfig().getInt("Areas." + areaName + ".Data.Location.HighZ");
+			int x2 = conf.getConfig().getInt("Areas." + areaName + ".Data.Location.HighX");
+			int y2 = conf.getConfig().getInt("Areas." + areaName + ".Data.Location.HighY");
+			int z2 = conf.getConfig().getInt("Areas." + areaName + ".Data.Location.HighZ");
 			
-			int telx = c.getConfig().getInt("Areas." + areaName + ".Data.TPLocation.X");
-			int tely = c.getConfig().getInt("Areas." + areaName + ".Data.TPLocation.Y");
-			int telz = c.getConfig().getInt("Areas." + areaName + ".Data.TPLocation.Z");
+			int telx = conf.getConfig().getInt("Areas." + areaName + ".Data.TPLocation.X");
+			int tely = conf.getConfig().getInt("Areas." + areaName + ".Data.TPLocation.Y");
+			int telz = conf.getConfig().getInt("Areas." + areaName + ".Data.TPLocation.Z");
 			
-			String world = c.getConfig().getString("Areas." + areaName + ".Data.Location.World");
+			String world = conf.getConfig().getString("Areas." + areaName + ".Data.Location.World");
 			
 			Location teleportLocation = new Location(Bukkit.getWorld(world), telx, tely, telz);
+
+			String owner = conf.getConfig().getString("Areas." + areaName + ".Data.Owner");
 			
-			AreaType type = AreaType.valueOf(c.getConfig().getString("Areas." + areaName + ".Data.AreaType"));
-			String owner = c.getConfig().getString("Areas." + areaName + ".Data.Owner");
+			String enterMessage = conf.getConfig().getString("Areas." + areaName + ".Data.EnterMessage");
+			String leaveMessage = conf.getConfig().getString("Areas." + areaName + ".Data.LeaveMessage");
 			
-			Area a = new Area(areaName, owner, type, x1, y1, z1, x2, y2, z2, world);
+			Area area = new Area(areaName, owner, x1, y1, z1, x2, y2, z2, world);
 			
-			a.setTeleportLocation(teleportLocation);
+			area.setEnterMessage(enterMessage);
+			area.setLeaveMessage(leaveMessage);
 			
-			a.setCreationDate(c.getConfig().getLong("Areas." + areaName + ".Data.CreationDate"));
+			area.setTeleportLocation(teleportLocation);
+			
+			area.setCreationDate(conf.getConfig().getLong("Areas." + areaName + ".Data.CreationDate"));
 			
 			FlagsMap areaFlags = new FlagsMap();
 			AreaPlayerFlags areaPlayerFlags = new AreaPlayerFlags();
-			for(String aflags : c.getConfig().getConfigurationSection("Areas." + areaName + ".Flags").getKeys(false)){
+			for(String aflags : conf.getConfig().getConfigurationSection("Areas." + areaName + ".Flags").getKeys(false)){
 				Flag f = FlagManager.getFlag(aflags);
-				areaFlags.addFlag(f, c.getConfig().getBoolean("Areas." + areaName + ".Flags." + aflags ));
+				areaFlags.addFlag(f, conf.getConfig().getBoolean("Areas." + areaName + ".Flags." + aflags ));
 			}
-			for(String players : c.getConfig().getConfigurationSection("Areas." + areaName + ".Players").getKeys(false)){
-				for(String plflags : c.getConfig().getConfigurationSection("Areas." + areaName + ".Players." + players).getKeys(false)){
+			for(String players : conf.getConfig().getConfigurationSection("Areas." + areaName + ".Players").getKeys(false)){
+				for(String plflags : conf.getConfig().getConfigurationSection("Areas." + areaName + ".Players." + players).getKeys(false)){
 					Flag f = FlagManager.getFlag(plflags);
-					areaPlayerFlags.addPlayerFlag(UUID.fromString(players), f, c.getConfig().getBoolean("Areas." + areaName + ".Players." + players + "." + plflags));
+					areaPlayerFlags.addPlayerFlag(UUID.fromString(players), f, conf.getConfig().getBoolean("Areas." + areaName + ".Players." + players + "." + plflags));
 				}
 			}
-			a.setAreaFlags(areaFlags);
-			a.setAreaPlayerFlags(areaPlayerFlags);
-			Manager.addAreaToList(a);
-			Manager.getChunkStorageManager(world).addAreaToChunkStorages(a);
+			area.setAreaFlags(areaFlags);
+			area.setAreaPlayerFlags(areaPlayerFlags);
+			
+			LoadSubzone.loadAreaSubzones(area, conf);
+			
+			Manager.addArena(area);
 		} catch (Exception e){
 			e.printStackTrace();
 		}

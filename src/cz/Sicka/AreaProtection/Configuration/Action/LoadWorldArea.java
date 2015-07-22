@@ -11,11 +11,11 @@ import org.bukkit.World;
 import cz.Sicka.AreaProtection.AreaProtection;
 import cz.Sicka.AreaProtection.Manager;
 import cz.Sicka.AreaProtection.Area.WorldArea;
-import cz.Sicka.AreaProtection.Configuration.Configuration;
 import cz.Sicka.AreaProtection.Flags.Flag;
 import cz.Sicka.AreaProtection.Flags.FlagManager;
 import cz.Sicka.AreaProtection.Lang.Lang;
 import cz.Sicka.AreaProtection.Utils.FlagsMap;
+import cz.Sicka.Core.Utils.Configuration.Configuration;
 
 public class LoadWorldArea {
 	private Map<String, Configuration> worldConfig = new HashMap<String, Configuration>();

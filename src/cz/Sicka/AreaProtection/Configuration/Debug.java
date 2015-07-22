@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import cz.Sicka.AreaProtection.AreaProtection;
+import cz.Sicka.Core.Utils.Configuration.Configuration;
 
 public class Debug {
 	File folder = new File(AreaProtection.getInstance().getDataFolder(), "debug.yml");

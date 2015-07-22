@@ -5,24 +5,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cz.Sicka.AreaProtection.Flags.Flag;
+import cz.Sicka.AreaProtection.Flags.FlagManager;
 
 public class FlagsMap {
-	private Map<String, Boolean> flags = new HashMap<String, Boolean>();
+	private Map<String, Boolean> flags;
 	
 	public FlagsMap(Map<String, Boolean> flags){
 		this.flags = flags;
 	}
 	
 	public FlagsMap(Flag flag, boolean value){
+		flags = new HashMap<String, Boolean>();
 		this.flags.put(flag.getName().toLowerCase(), value);
 	}
 	
 	public FlagsMap(String flag, boolean value){
+		flags = new HashMap<String, Boolean>();
 		this.flags.put(flag.toLowerCase(), value);
 	}
 	
 	public FlagsMap(){
-		
+		flags = new HashMap<String, Boolean>();
 	}
 	
 	public void addFlag(Flag flag, boolean value){
@@ -56,5 +59,13 @@ public class FlagsMap {
 	
 	public Map<String, Boolean> getFlagsAndValues(){
 		return this.flags;
+	}
+	
+	public Map<Flag, Boolean> getAreaFlags(){
+		Map<Flag, Boolean> fl = new HashMap<Flag, Boolean>();
+		for(String flagName : this.flags.keySet()){
+			fl.put(FlagManager.getFlag(flagName), this.getFlagValue(flagName));
+		}
+		return fl;
 	}
 }

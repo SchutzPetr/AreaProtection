@@ -5,16 +5,20 @@ import java.util.Map;
 import cz.Sicka.AreaProtection.AreaProtection;
 import cz.Sicka.AreaProtection.Configuration.Action.LoadArea;
 import cz.Sicka.AreaProtection.Configuration.Action.LoadWorldArea;
+import cz.Sicka.AreaProtection.Configuration.Configs.Config;
+import cz.Sicka.Core.Utils.Configuration.Configuration;
 
 public class ConfigurationManager {
 	private AreaProtection plugin;
 	private LoadArea loadArea;
 	private LoadWorldArea loadWorldArea;
+	private Config config;
 	
 	public ConfigurationManager(AreaProtection instance){
 		this.plugin = instance;
 		this.loadArea = new LoadArea(this.plugin);
 		this.loadWorldArea = new LoadWorldArea(this.plugin);
+		this.config = new Config(this.plugin);
 	}
 	
 	public Map<String, Configuration> getSaveAreasFiles(){
@@ -53,5 +57,12 @@ public class ConfigurationManager {
 	
 	public LoadWorldArea getLoadWorldArea() {
 		return loadWorldArea;
+	}
+
+	/**
+	 * @return the config
+	 */
+	public Config getConfig() {
+		return config;
 	}
 }

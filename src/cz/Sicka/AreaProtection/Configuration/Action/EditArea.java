@@ -7,8 +7,8 @@ import org.bukkit.entity.Player;
 import cz.Sicka.AreaProtection.AreaProtection;
 import cz.Sicka.AreaProtection.Manager;
 import cz.Sicka.AreaProtection.Area.Area;
-import cz.Sicka.AreaProtection.Configuration.Configuration;
 import cz.Sicka.AreaProtection.Lang.Lang;
+import cz.Sicka.Core.Utils.Configuration.Configuration;
 
 public class EditArea {
 	

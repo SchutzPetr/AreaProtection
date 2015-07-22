@@ -9,10 +9,10 @@ import org.bukkit.World;
 import cz.Sicka.AreaProtection.AreaProtection;
 import cz.Sicka.AreaProtection.Area.AreaPlayerFlags;
 import cz.Sicka.AreaProtection.Commands.CommandsUtils;
-import cz.Sicka.AreaProtection.Configuration.Configuration;
 import cz.Sicka.AreaProtection.Flags.Flag;
 import cz.Sicka.AreaProtection.Flags.FlagManager;
 import cz.Sicka.AreaProtection.Utils.FlagsMap;
+import cz.Sicka.Core.Utils.Configuration.Configuration;
 
 public class ConversionResidenceManager {
 	private AreaProtection plugin;
@@ -62,7 +62,7 @@ public class ConversionResidenceManager {
 				areaConfig.getConfig().set("Areas." + areaName + ".Data.TPLocation.Y", tely);
 				areaConfig.getConfig().set("Areas." + areaName + ".Data.TPLocation.Z", telz);
 				
-				areaConfig.getConfig().set("Areas." + areaName + ".Data.AreaType", "PLAYER_AREA");
+				//TODO: areaConfig.getConfig().set("Areas." + areaName + ".Data.AreaType", "PLAYER_AREA");
 				
 				String seldata = "Residences." + areaName + ".Data.";
 				
@@ -74,8 +74,8 @@ public class ConversionResidenceManager {
 				
 				String enterMessage = residenceConfig.getConfig().getString(seldata + ".EnterMessage");
 				String leaveMessage = residenceConfig.getConfig().getString(seldata + ".LeaveMessage");
-				areaConfig.getConfig().set("Areas." + areaName + ".EnterMessage", enterMessage);
-				areaConfig.getConfig().set("Areas." + areaName + ".LeaveMessage", leaveMessage);
+				areaConfig.getConfig().set("Areas." + areaName + ".Data.EnterMessage", enterMessage);
+				areaConfig.getConfig().set("Areas." + areaName + ".Data.LeaveMessage", leaveMessage);
 				
 				FlagsMap areaFlags = new FlagsMap();
 				AreaPlayerFlags areaPlayerFlags = new AreaPlayerFlags();
@@ -124,7 +124,7 @@ public class ConversionResidenceManager {
 				}
 				areaConfig.saveConfig();
 				
-				ConvertSubzone(residenceConfig, areaConfig, areaName);
+				//ConvertSubzone(residenceConfig, areaConfig, areaName);
 			}
 		}
 	}
@@ -167,7 +167,7 @@ public class ConversionResidenceManager {
 			areaConfig.getConfig().set("Areas." + residence + ".Subzones." + subzoneName + ".Data.TPLocation.Y", tely);
 			areaConfig.getConfig().set("Areas." + residence + ".Subzones." + subzoneName + ".Data.TPLocation.Z", telz);
 			
-			areaConfig.getConfig().set("Areas." + residence + ".Subzones." + subzoneName + ".Data.AreaType", "PLAYER_AREA");
+			//TODO: areaConfig.getConfig().set("Areas." + residence + ".Subzones." + subzoneName + ".Data.AreaType", "PLAYER_AREA");
 			
 			String seldata = subzoneSelectionPlusName + ".Data.";
 			
@@ -180,8 +180,8 @@ public class ConversionResidenceManager {
 			String enterMessage = residenceConfig.getConfig().getString(seldata + ".EnterMessage");
 			String leaveMessage = residenceConfig.getConfig().getString(seldata + ".LeaveMessage");
 			
-			areaConfig.getConfig().set("Areas." + residence + ".Subzones." + subzoneName + ".EnterMessage", enterMessage);
-			areaConfig.getConfig().set("Areas." + residence + ".Subzones." + subzoneName + ".LeaveMessage", leaveMessage);
+			areaConfig.getConfig().set("Areas." + residence + ".Subzones." + subzoneName + ".Data.EnterMessage", enterMessage);
+			areaConfig.getConfig().set("Areas." + residence + ".Subzones." + subzoneName + ".Data.LeaveMessage", leaveMessage);
 			
 			FlagsMap areaFlags = new FlagsMap();
 			AreaPlayerFlags areaPlayerFlags = new AreaPlayerFlags();

@@ -2,6 +2,7 @@ main: cz.Sicka.AreaProtection.AreaProtection
 name: AreaProtection
 version: 0.0.1-BETA_R0.0_DEV
 author: Sicka_gp
+softdepend: [Vault, dynmap, CreeplandsCore]
 commands:
    areaprotection:
       aliases: [area]

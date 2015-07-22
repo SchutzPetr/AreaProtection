@@ -1,4 +1,4 @@
-package cz.Sicka.AreaProtection.Chunks;
+package cz.Sicka.AreaProtection.ChunkStorage;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,34 +51,4 @@ public class ChunkStorageManager {
 			return ch;
 		}
 	}
-	
-	/*public List<ChunkStorage> calculateChunks(int x1, int z1, int x2, int z2){
-		List<ChunkStorage> ch = new ArrayList<ChunkStorage>();
-		if(x1 > x2){
-			for(int u = x1 >> 4; u >= x2 >> 4; u--){
-				if(z1 > z2){
-					for(int uu = z1 >> 4; uu >= z2 >> 4; uu--){
-						ch.add(new ChunkStorage(u, uu));
-					}
-				}else{
-					for(int uu = z1 >> 4; uu <= z2 >> 4; uu++){
-						ch.add(new ChunkStorage(u, uu));
-					}
-				}
-			}
-		}else{
-			for(int u = x1 >> 4; u <= x2 >> 4; u++){
-				if(z1 > z2){
-					for(int uu = z1 >> 4; uu <= z2 >> 4; uu--){
-						ch.add(new ChunkStorage(u, uu));
-					}
-				}else{
-					for(int uu = z1 >> 4; uu <= z2 >> 4; uu++){
-						ch.add(new ChunkStorage(u, uu));
-					}
-				}
-			}
-		}
-		return ch;
-	}*/
 }

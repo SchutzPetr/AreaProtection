@@ -8,6 +8,7 @@ public class PermissionArea {
 	private FlagsMap worldFlags;
 	private AreaType type;
 	private String ownerName;
+	private String fullName;
 	
 	public PermissionArea(String areaName, AreaType type, FlagsMap worldFlags, String worldName, String ownerName){
 		this.worldName = worldName;
@@ -15,6 +16,16 @@ public class PermissionArea {
 		this.type = type;
 		this.areaName = areaName;
 		this.ownerName = ownerName;
+		this.fullName = areaName;
+	}
+	
+	public PermissionArea(String areaName, String mainAreaName, AreaType type, FlagsMap worldFlags, String worldName, String ownerName){
+		this.worldName = worldName;
+		this.worldFlags = worldFlags;
+		this.type = type;
+		this.areaName = areaName;
+		this.ownerName = ownerName;
+		this.fullName = mainAreaName + "." + areaName;
 	}
 
 	public FlagsMap getWorldFlags() {
@@ -38,6 +49,16 @@ public class PermissionArea {
 	}
 
 	public String getOwnerName() {
+		if(this.ownerName == null){
+			return "nezname jmeno!";
+		}
 		return this.ownerName;
+	}
+
+	/**
+	 * @return the fullName
+	 */
+	public String getFullName() {
+		return fullName;
 	}
 }

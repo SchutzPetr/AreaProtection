@@ -1,69 +1,147 @@
 package cz.Sicka.AreaProtection.Configuration.Configs;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+import java.util.Map;
 
 import cz.Sicka.AreaProtection.AreaProtection;
+import cz.Sicka.AreaProtection.Utils.FlagsMap;
+import cz.Sicka.Core.Utils.Configuration.Configuration;
 
 public class Config {
-	private FileConfiguration config = null;
-	private File configfile = null;
+	Configuration config;
 	private AreaProtection plugin;
 	
-	public Config(AreaProtection instance, File folder, String yamlName){
-		plugin = instance;
-	}
+	String defaultEnterMessage;
+	String defaultLeaveMessage;
+	String version;
+
+	FlagsMap areaFlags;
 	
+	int maxHeight;
+	int minHeight;
+	int maxLength;
+	int minLength;
+	int maxWidth;
+	int minWidth;
 	
-	public void reloadConfig() {
-		if(configfile == null){
-			configfile = new File(plugin.getDataFolder(), ".yml");
+	int priceOfTheBlockExpanse;
+
+	boolean economy;
+	
+	public Config(AreaProtection plugin){
+		this.config = new Configuration(new File(this.plugin.getDataFolder(), "Configuration.yml"));
+		
+		this.defaultEnterMessage = this.config.getConfig().getString("DefaultAreaSettings.DefaultEnterMessage");
+		this.defaultLeaveMessage = this.config.getConfig().getString("DefaultAreaSettings.DefaultLeaveMessage");
+		this.version = this.config.getConfig().getString("Version");
+		
+		this.areaFlags = new FlagsMap();
+		
+		Map<String, Object> flags = this.config.getConfig().getConfigurationSection("DefaultAreaSettings.AreaFlags").getValues(false);
+		for(String flag : flags.keySet()){
+			this.areaFlags.addFlag(flag, ((Boolean)flags.get(flag)).booleanValue());
 		}
-		config = YamlConfiguration.loadConfiguration(configfile);
-		// Look for defaults in the jar
-	    try {
-			Reader defConfigStream = new InputStreamReader(plugin.getResource("config.yml"), "UTF8");
-			if (defConfigStream != null) {
-		        YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
-		        config.setDefaults(defConfig);
-		    }
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
+		
+		this.maxHeight = this.config.getConfig().getInt("DefaultAreaSettings.MaxHeight");
+		this.minHeight = this.config.getConfig().getInt("DefaultAreaSettings.MinHeight");
+		this.maxLength = this.config.getConfig().getInt("DefaultAreaSettings.MaxLength");
+		this.minLength = this.config.getConfig().getInt("DefaultAreaSettings.MinLength");
+		this.maxWidth = this.config.getConfig().getInt("DefaultAreaSettings.MaxWidth");
+		this.minWidth = this.config.getConfig().getInt("DefaultAreaSettings.MinWidth");
+		
+		this.priceOfTheBlockExpanse = this.config.getConfig().getInt("Settings.PriceOfTheBlockExpanse");
+		this.economy = this.config.getConfig().getBoolean("Settings.Economy");
 	}
-	
-	
-	public FileConfiguration getConfig() {
-	    if (config == null) {
-	        reloadConfig();
-	    }
-	    return config;
+
+	/**
+	 * @return the config
+	 */
+	public Configuration getConfig() {
+		return config;
 	}
-	
-	public void saveConfig() {
-	    if (config == null || configfile == null) {
-	        return;
-	    }
-	    try {
-	        getConfig().save(configfile);
-	    } catch (IOException ex) {
-	    	//TODO: AreaProtection.LogMessage(Level.SEVERE, Lang.CouldNotSaveConfig + configfile.getName());
-	    }
+
+	/**
+	 * @return the defaultEnterMessage
+	 */
+	public String getDefaultEnterMessage() {
+		return defaultEnterMessage;
 	}
-	
-	public void saveDefaultConfig() {
-	    if (configfile == null) {
-	        configfile = new File(plugin.getDataFolder(), "config.yml");
-	    }
-	    if (!configfile.exists()) {            
-	         plugin.saveResource("config.yml", false);
-	       //TODO: AreaProtection.LogMessage(Level.INFO, Lang.CreateConfigFile + configfile.getName());
-	    }
+
+	/**
+	 * @return the defaultLeaveMessage
+	 */
+	public String getDefaultLeaveMessage() {
+		return defaultLeaveMessage;
+	}
+
+	/**
+	 * @return the version
+	 */
+	public String getVersion() {
+		return version;
+	}
+
+	/**
+	 * @return the areaFlags
+	 */
+	public FlagsMap getAreaFlags() {
+		return areaFlags;
+	}
+
+	/**
+	 * @return the maxHeight
+	 */
+	public int getMaxHeight() {
+		return maxHeight;
+	}
+
+	/**
+	 * @return the minHeight
+	 */
+	public int getMinHeight() {
+		return minHeight;
+	}
+
+	/**
+	 * @return the maxLength
+	 */
+	public int getMaxLength() {
+		return maxLength;
+	}
+
+	/**
+	 * @return the minLength
+	 */
+	public int getMinLength() {
+		return minLength;
+	}
+
+	/**
+	 * @return the maxWidth
+	 */
+	public int getMaxWidth() {
+		return maxWidth;
+	}
+
+	/**
+	 * @return the minWidth
+	 */
+	public int getMinWidth() {
+		return minWidth;
+	}
+
+	/**
+	 * @return the priceOfTheBlockExpanse
+	 */
+	public int getPriceOfTheBlockExpanse() {
+		return priceOfTheBlockExpanse;
+	}
+
+	/**
+	 * @return the economy
+	 */
+	public boolean isEconomy() {
+		return economy;
 	}
 
 }

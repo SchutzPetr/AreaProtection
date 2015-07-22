@@ -39,6 +39,7 @@ import cz.Sicka.AreaProtection.Listeners.WorldListener;
 import cz.Sicka.AreaProtection.Utils.AnsiColor;
 import cz.Sicka.AreaProtection.Utils.Selections.SelectionManager;
 import cz.Sicka.AreaProtection.Utils.Tasks.MainTask;
+import cz.Sicka.Core.Utils.Configuration.DefaultConfig;
 
 public class AreaProtection extends JavaPlugin {
 	private static Logger log = Logger.getLogger("Minecraft");
@@ -49,6 +50,23 @@ public class AreaProtection extends JavaPlugin {
 	private static Debug deb;
 	private LangConfiguration langc;
 	private static List<String> enableWorlds = new ArrayList<String>();
+	private AreaProtectionDynmap dynmap;
+	private BlockBreakListener blockBreak;
+	private BlockPlaceListener blockPlace;
+	private BucketListener bucket;
+	private EndermanPickupListener endermanPickup;
+	private EntityDamageListener entityDamage;
+	private ExplosionListener explosion;
+	private FireListener fire;
+	private FlowListener flow;
+	private InteractListener interact;
+	private LoginLogoutListener loginLogout;
+	private MoveListener move;
+	private PistonListener piston;
+	private SpawnListener spawn;
+	private TeleportListener teleport;
+	private VehicleMoveListener vehicleMove;
+	private WorldListener world;
 
 	public static AreaProtection getInstance() {
 		return plugin;
@@ -59,6 +77,10 @@ public class AreaProtection extends JavaPlugin {
 		plugin = this;
 		langc = new LangConfiguration();
 		new Lang();
+		
+		DefaultConfig configuration = new DefaultConfig(plugin, "Configuration.yml");
+		configuration.saveDefaultConfig();
+		
 		new AnsiColor();
 		new FlagManager(null);
 		
@@ -72,50 +94,51 @@ public class AreaProtection extends JavaPlugin {
 		
 		getCommand("areaprotection").setExecutor(new AreaProtectionCommandManager());
 		
+		blockBreak = new BlockBreakListener();
+		blockPlace = new BlockPlaceListener();
+		bucket = new BucketListener();
+		endermanPickup = new EndermanPickupListener();
+		entityDamage = new EntityDamageListener();
+		
+		explosion = new ExplosionListener();
+		fire = new FireListener();
+		flow = new FlowListener();
+		interact = new InteractListener();
+		loginLogout = new LoginLogoutListener();
+		
+		move = new MoveListener();
+		piston = new PistonListener();
+		spawn = new SpawnListener();
+		teleport = new TeleportListener();
+		vehicleMove = new VehicleMoveListener();
+		
+		world = new WorldListener();
+		
 		PluginManager pm = getServer().getPluginManager();
-		pm.registerEvents(new BlockBreakListener(), this);
-		pm.registerEvents(new BlockPlaceListener(), this);
-		pm.registerEvents(new BucketListener(), this);
-		pm.registerEvents(new EndermanPickupListener(), this);
-		pm.registerEvents(new EntityDamageListener(), this);
+		pm.registerEvents(blockBreak, this);
+		pm.registerEvents(blockPlace, this);
+		pm.registerEvents(bucket, this);
+		pm.registerEvents(endermanPickup, this);
+		pm.registerEvents(entityDamage, this);
 		
-		pm.registerEvents(new ExplosionListener(), this);
-		pm.registerEvents(new FireListener(), this);
-		pm.registerEvents(new FlowListener(), this);
-		pm.registerEvents(new InteractListener(), this);
-		pm.registerEvents(new LoginLogoutListener(), this);
+		pm.registerEvents(explosion, this);
+		pm.registerEvents(fire, this);
+		pm.registerEvents(flow, this);
+		pm.registerEvents(interact, this);
+		pm.registerEvents(loginLogout, this);
 		
-		pm.registerEvents(new MoveListener(), this);
-		pm.registerEvents(new PistonListener(), this);
-		pm.registerEvents(new SpawnListener(), this);
-		pm.registerEvents(new TeleportListener(), this);
-		pm.registerEvents(new VehicleMoveListener(), this);
+		pm.registerEvents(move, this);
+		pm.registerEvents(piston, this);
+		pm.registerEvents(spawn, this);
+		pm.registerEvents(teleport, this);
+		pm.registerEvents(vehicleMove, this);
 		
-		pm.registerEvents(new WorldListener(), this);
-		
-		
-		new BlockBreakListener();
-		new BlockPlaceListener();
-		new BucketListener();
-		new EndermanPickupListener();
-		new EntityDamageListener();
-		
-		new ExplosionListener();
-		new FireListener();
-		new FlowListener();
-		new InteractListener();
-		new LoginLogoutListener();
-		
-		new MoveListener();
-		new PistonListener();
-		new SpawnListener();
-		new TeleportListener();
-		new VehicleMoveListener();
-		
-		new WorldListener();
+		pm.registerEvents(world, this);
 		
 		new MainTask(this);
 		new ConversionManager(this);
+		
+		dynmap = new AreaProtectionDynmap(this);
 	}
 	
 	@Override
@@ -165,5 +188,12 @@ public class AreaProtection extends JavaPlugin {
 
 	public LangConfiguration getLangConfiguration() {
 		return langc;
+	}
+
+	/**
+	 * @return the dynmap
+	 */
+	public AreaProtectionDynmap getAreaProtectionDynmap() {
+		return dynmap;
 	}
 }

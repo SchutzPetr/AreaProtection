@@ -29,7 +29,7 @@ public class VehicleMoveListener implements Listener {
         	 cz.Sicka.AreaProtection.Utils.ListenersUtils.handleNewLocation(player, event.getFrom(), event.getTo());
             return;
         }
-        if (!AreaProtectionAPI.getAreaProtectionManager().allowAction(player, area, FlagManager.VEHICLEMOVE)) {
+        if (!AreaProtectionAPI.getAreaProtectionManager().allowAction(player, event.getTo(), area, FlagManager.VEHICLEMOVE)) {
             vehicle.setVelocity(new Vector(0,0,0));
             vehicle.teleport(event.getFrom());
             return;

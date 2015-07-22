@@ -2,9 +2,8 @@ package cz.Sicka.AreaProtection.Configuration.Configs;
 
 import org.bukkit.Location;
 
-import cz.Sicka.AreaProtection.Area.AreaType;
-import cz.Sicka.AreaProtection.Configuration.Configuration;
 import cz.Sicka.AreaProtection.Utils.FlagsMap;
+import cz.Sicka.Core.Utils.Configuration.Configuration;
 
 public class AreaConfig {
 	private Configuration config;
@@ -45,10 +44,6 @@ public class AreaConfig {
 	
 	public void setOwner(String ownerUUID){
 		this.config.getConfig().set("Areas." + areaName + ".Data.Owner", ownerUUID);
-	}
-	
-	public void setAreaType(AreaType type){
-		this.config.getConfig().set("Areas." + areaName + ".Data.AreaType", type);
 	}
 	
 	public void setCreationDate(long date){

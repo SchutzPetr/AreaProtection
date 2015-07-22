@@ -5,19 +5,20 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-
-import cz.Sicka.AreaProtection.AreaProtection;
-import cz.Sicka.AreaProtection.Area.AreaType;
 import cz.Sicka.AreaProtection.Area.AreaPlayerFlags;
 import cz.Sicka.AreaProtection.Flags.Flag;
 import cz.Sicka.AreaProtection.Flags.FlagManager;
 import cz.Sicka.AreaProtection.Utils.FlagsMap;
+import cz.Sicka.AreaProtection.Utils.SubzoneManager;
+import cz.Sicka.Core.Core;
+import cz.Sicka.Core.Users.User;
 
 public class Area {
 	private String areaName;
 	
 	private List<String> chunks;
+	
+	private SubzoneManager subzones;
 	
 	private int highX;
 	private int highY;
@@ -37,22 +38,21 @@ public class Area {
 	private long CreationDate;
 	private FlagsMap areaFlags;
 	
-	private AreaType type;
-	private String ownerName;
+	private String enterMessage;
+	private String leaveMessage;
 
-	public Area(String areaName, String owner, AreaType type, int loc_1_x, int loc_1_y, int loc_1_z, int loc_2_x, int loc_2_y, int loc_2_z, String worldName){
+	public Area(String areaName, String owner, int loc_1_x, int loc_1_y, int loc_1_z, int loc_2_x, int loc_2_y, int loc_2_z, String worldName){
 		this.areaName = areaName;
 		this.owner = UUID.fromString(owner);
-		this.ownerName = getOwner().getName();
-		this.type = type;
 		serialize(loc_1_x, loc_1_y, loc_1_z, loc_2_x, loc_2_y, loc_2_z);
 		
 		this.world = worldName;
 		
 		this.areaPlayerFlags = new AreaPlayerFlags();
+		this.subzones = new SubzoneManager(this);
 	}
 	
-	public void serialize(int loc_1_x, int loc_1_y, int loc_1_z, int loc_2_x, int loc_2_y, int loc_2_z){
+	private void serialize(int loc_1_x, int loc_1_y, int loc_1_z, int loc_2_x, int loc_2_y, int loc_2_z){
 		if(loc_1_x > loc_2_x){
 			highX = loc_1_x;
 			lowX = loc_2_x;
@@ -75,6 +75,33 @@ public class Area {
 			lowZ = loc_1_z;
 		}
 	}
+	
+	public int getSize(){
+        int xsize = (highX - lowX) + 1;
+        int ysize = (highY - lowY) + 1;
+        int zsize = (highZ - lowZ) + 1;
+        return xsize * ysize * zsize;
+    }
+	
+	public int getXSize() {
+        return (highX - lowX) + 1;
+    }
+
+    public int getYSize() {
+        return (highY - lowY) + 1;
+    }
+
+    public int getZSize() {
+        return (highZ - lowZ) + 1;
+    }
+
+    public Location getHighLocation() {
+        return new Location(Bukkit.getWorld(world), highX, highY, highZ);
+    }
+
+    public Location getLowLocation() {
+        return new Location(Bukkit.getWorld(world), lowX, lowY, lowZ);
+    }
 
 	public int getHighX() {
         return highX;
@@ -147,11 +174,11 @@ public class Area {
 		this.areaFlags = areaFlags;
 	}
 
-	public OfflinePlayer getOwner() {
-		return AreaProtection.getInstance().getServer().getOfflinePlayer(this.owner);
+	public User getOwner() {
+		return Core.getUserManager().getUser(owner);
 	}
 	
-	public UUID getOwnerUUID() {
+	public UUID getOwnerUniqueId() {
 		return this.owner;
 	}
 
@@ -188,6 +215,7 @@ public class Area {
 			return FlagManager.getAreaFlag(flag.getName()).getDefaultAreaFlagValue();
 		}
 	}
+	
 	@Deprecated
 	public boolean allowAction(UUID player, Flag flag){
 		if(isOwner(player)){
@@ -198,22 +226,55 @@ public class Area {
 	}
 	
 	public boolean isOwner(UUID player){
-		return getOwnerUUID().equals(player);
+		return getOwnerUniqueId().equals(player);
 	}
 
-	public AreaType getType() {
-		return type;
+	/**
+	 * @return the leaveMessage
+	 */
+	public String getLeaveMessage() {
+		return leaveMessage;
 	}
 
+	/**
+	 * @param leaveMessage the leaveMessage to set
+	 */
+	public void setLeaveMessage(String leaveMessage) {
+		this.leaveMessage = leaveMessage;
+	}
+
+	/**
+	 * @return the enterMessage
+	 */
+	public String getEnterMessage() {
+		return enterMessage;
+	}
+
+	/**
+	 * @param enterMessage the enterMessage to set
+	 */
+	public void setEnterMessage(String enterMessage) {
+		this.enterMessage = enterMessage;
+	}
+
+	/**
+	 * @return the teleportLocation
+	 */
 	public Location getTeleportLocation() {
 		return teleportLocation;
 	}
 
+	/**
+	 * @param teleportLocation the teleportLocation to set
+	 */
 	public void setTeleportLocation(Location teleportLocation) {
 		this.teleportLocation = teleportLocation;
 	}
 
-	public String getOwnerName() {
-		return ownerName;
+	/**
+	 * @return the subzones
+	 */
+	public SubzoneManager getSubzoneManager() {
+		return subzones;
 	}
 }

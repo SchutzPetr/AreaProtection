@@ -3,8 +3,8 @@ package cz.Sicka.AreaProtection.Commands;
 import org.bukkit.entity.Player;
 
 import cz.Sicka.AreaProtection.AreaProtection;
-import cz.Sicka.AreaProtection.Manager;
 import cz.Sicka.AreaProtection.API.AreaProtectionAPI;
+import cz.Sicka.AreaProtection.Commands.Commands.CreateSubzoneCommand;
 import cz.Sicka.AreaProtection.Commands.Commands.CreationCommand;
 import cz.Sicka.AreaProtection.Commands.Commands.InfoCommand;
 import cz.Sicka.AreaProtection.Commands.Commands.PlayerSetCommand;
@@ -16,6 +16,7 @@ import cz.Sicka.AreaProtection.Commands.Commands.SetCommand;
 import cz.Sicka.AreaProtection.Utils.Messages;
 import cz.Sicka.AreaProtection.Utils.Replacer;
 import cz.Sicka.AreaProtection.Utils.Utils;
+import cz.Sicka.Core.Core;
 
 public class AreaProtectionPlayerCommand {
 	
@@ -33,7 +34,8 @@ public class AreaProtectionPlayerCommand {
 				return true;
 			}else if(args[0].equalsIgnoreCase("tp")){
 				if(args.length == 2){
-					return TPCommand.onTPCommand(args[1], player);
+					TPCommand.onTPCommand(args[1], player);
+					return true;
 				}else{
 					return true;
 				}
@@ -44,7 +46,7 @@ public class AreaProtectionPlayerCommand {
 					player.sendMessage("&7++++&2-----------[ &6" + AreaProtection.getInstance().getDescription().getName() + "&2 ]-----------&7++++");
 					player.sendMessage("/area create <jmeno> - vytvori oblast");
 				}else if(args.length == 2){
-					CreationCommand.onCreationCommand(player, args[1]);
+					CreationCommand.createArea(Core.getUserManager().getUser(player.getUniqueId()), args[1]);
 				}else{
 					player.sendMessage("&7++++&2-----------[ &6" + AreaProtection.getInstance().getDescription().getName() + "&2 ]-----------&7++++");
 					player.sendMessage("/area create <jmeno> - vytvori oblast");
@@ -71,8 +73,16 @@ public class AreaProtectionPlayerCommand {
 					}
 				}
 				//-/area pset <area> <hrac> build t
-			}else if(args[0].equalsIgnoreCase("test")){
-				newTest.onTest(player);
+			}else if(args[0].equalsIgnoreCase("createsubzone")){
+				if((args == null) || (args.length < 2)){
+					player.sendMessage("&7++++&2-----------[ &6" + AreaProtection.getInstance().getDescription().getName() + "&2 ]-----------&7++++");
+					player.sendMessage("/area create <jmeno> - vytvori oblast");
+				}else if(args.length == 2){
+					CreateSubzoneCommand.onCreateSubzoneCommand(player, args[1]);
+				}else{
+					player.sendMessage("&7++++&2-----------[ &6" + AreaProtection.getInstance().getDescription().getName() + "&2 ]-----------&7++++");
+					player.sendMessage("/area create <jmeno> - vytvori oblast");
+				}
 			}else if(args[0].equalsIgnoreCase("pset")){
 				//-/area pset <hrac> build t
 				if(args.length == 4){
@@ -111,9 +121,11 @@ public class AreaProtectionPlayerCommand {
 					player.sendMessage("/area remove <jmeno> - odstrani oblast");
 					return true;
 				}else if(args.length == 1){
-					return InfoCommand.onInfoCommand(AreaProtectionAPI.getAreaProtectionManager().getAreaByLocation(player.getLocation()), player);
+					InfoCommand.onInfoCommand(AreaProtectionAPI.getAreaProtectionManager().getPermissionArea(player.getLocation()), player);
+					return true;
 				}else{
-					return InfoCommand.onInfoCommand(Manager.getArea(args[1]), player);
+					InfoCommand.onInfoCommand(args[1], player);
+					return true;
 				}
 			}
 		}

@@ -2,8 +2,6 @@ package cz.Sicka.AreaProtection.Flags;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.bukkit.permissions.Permission;
 @SuppressWarnings("unused")
 public class Flag {
 	private String name;

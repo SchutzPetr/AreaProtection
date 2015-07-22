@@ -11,8 +11,11 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 import cz.Sicka.AreaProtection.Area.Area;
+import cz.Sicka.AreaProtection.Area.AreaType;
+import cz.Sicka.AreaProtection.Area.PermissionArea;
+import cz.Sicka.AreaProtection.Area.Subzone;
 import cz.Sicka.AreaProtection.Area.WorldArea;
-import cz.Sicka.AreaProtection.Chunks.ChunkStorageManager;
+import cz.Sicka.AreaProtection.ChunkStorage.ChunkStorageManager;
 import cz.Sicka.AreaProtection.Lang.Lang;
 import cz.Sicka.AreaProtection.Utils.Utils;
 
@@ -33,6 +36,17 @@ public class Manager {
 			getWorld_ChunkStorageManagers().put(w.getName(), new ChunkStorageManager(w));
 			getAreasInWorlds().put(w.getName(), new ArrayList<String>());
 		}
+	}
+	
+	public static void reloadArea(String areaName){
+		Area area = getArea(areaName);
+		removeArea(areaName);
+		AreaProtection.getInstance().getConfigurationManager().getLoadArea().loadArea(areaName, area.getWorldName());
+	}
+	
+	public static void reloadArea(Area area){
+		removeArea(area.getAreaName());
+		AreaProtection.getInstance().getConfigurationManager().getLoadArea().loadArea(area.getAreaName(), area.getWorldName());
 	}
 
 	public static Map<String, ChunkStorageManager> getWorld_ChunkStorageManagers() {
@@ -71,8 +85,9 @@ public class Manager {
 	}
 	
 	public static Area getArea(String areaName){
-		if(isAreaExist(areaName)){
-			return getAllAreas().get(areaName);
+		String lowerCaseName = areaName.toLowerCase();
+		if(isAreaExist(lowerCaseName)){
+			return getAllAreas().get(lowerCaseName);
 		}else{
 			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
 			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Manager");
@@ -84,12 +99,18 @@ public class Manager {
 	}
 	
 	public static boolean isAreaExist(String areaName){
-		return getAllAreas().containsKey(areaName);
+		return getAllAreas().containsKey(areaName.toLowerCase());
 	}
 	
 	public static void removeArea(String areaName){
-		if(isAreaExist(areaName)){
-			getAllAreas().remove(areaName);
+		String lowerCaseName = areaName.toLowerCase();
+		if(isAreaExist(lowerCaseName)){
+			Area area = getArea(lowerCaseName);
+			getAllAreas().remove(lowerCaseName);
+			for(String chunk : area.getChunks()){
+				getChunkStorageManager(area.getWorldName()).getChunkStorage(chunk).removeArea(lowerCaseName);
+			}
+			worldAreas.remove(lowerCaseName);
 		}else{
 			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
 			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Manager");
@@ -100,26 +121,32 @@ public class Manager {
 		}
 	}
 	
-	public static void addAreaToList(Area area){
-		if(!getAllAreas().containsKey(area.getAreaName())){
-			getAllAreas().put(area.getAreaName(), area);
+	public static void addArena(Area area){
+		addAreaToList(area);
+		getChunkStorageManager(area.getWorldName()).addAreaToChunkStorages(area);
+	}
+	
+	private static void addAreaToList(Area area){
+		String lowerCaseName = area.getAreaName().toLowerCase();
+		if(!getAllAreas().containsKey(lowerCaseName)){
+			getAllAreas().put(lowerCaseName, area);
 		}else{
 			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
 			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Manager");
 			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: addAreaToList");
 			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: SubMetod ID: " + 1);
-			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: description: Area " + area.getAreaName() + "already exist");
+			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: description: Area " + lowerCaseName + " already exist");
 			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
 		}
 		if(getAreasInWorlds().containsKey(area.getWorldName())){
-			if(!getAreasInWorlds().get(area.getWorldName()).contains(area.getAreaName())){
-				getAreasInWorlds().get(area.getWorldName()).add(area.getAreaName());
+			if(!getAreasInWorlds().get(area.getWorldName()).contains(lowerCaseName)){
+				getAreasInWorlds().get(area.getWorldName()).add(lowerCaseName);
 			}else{
 				AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
 				AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Manager");
 				AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Metod: addAreaToList");
 				AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: SubMetod ID: " + 2);
-				AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: description: Area " + area.getAreaName() + "already exist");
+				AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: description: Area " + lowerCaseName + " already exist");
 				AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
 			}
 		}else{
@@ -133,12 +160,12 @@ public class Manager {
 	}
 	
 	public static void addWorldArea(WorldArea area){
-		world_Area.put(area.getWorldName(), area);
+		world_Area.put(area.getWorldName().toLowerCase(), area);
 	}
 	
 	public static WorldArea getWorldArea(String worldName){
-		if(world_Area.containsKey(worldName)){
-			return world_Area.get(worldName);
+		if(world_Area.containsKey(worldName.toLowerCase())){
+			return world_Area.get(worldName.toLowerCase());
 		}else{
 			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
 			AreaProtection.LogMessage(Level.SEVERE, "&4Error&f: Class: Manager");
@@ -147,6 +174,10 @@ public class Manager {
 			AreaProtection.LogMessage(Level.SEVERE, Lang.Line);
 			return null;
 		}
+	}
+	
+	public static boolean isWorldExist(String worldName){
+		return world_Area.containsKey(worldName.toLowerCase());
 	}
 
 	public static Map<String, Area> getAllAreas() {
@@ -161,7 +192,45 @@ public class Manager {
 		return getAreasInWorlds().get(worldName);
 	}
 	
+	public static Location getDefaultTeleportLocation(Subzone subzone){
+		return Utils.getLocationAboveGround(subzone.getCenter());
+	}
+	
 	public static Location getDefaultTeleportLocation(Area area){
 		return Utils.getLocationAboveGround(area.getCenter());
+	}
+	
+	public static PermissionArea getPermissionArea(String areaName){
+		String lowerCaseName = areaName.toLowerCase();
+		if(world_Area.containsKey(lowerCaseName)){
+			WorldArea wa = cz.Sicka.AreaProtection.Manager.getWorldArea(lowerCaseName);
+			return new PermissionArea(wa.getAreaName(), AreaType.WORLD_AREA, wa.getWorldFlags(), wa.getWorldName(), "Nature");
+		}
+		if(lowerCaseName.contains(".")){
+			String[] split = lowerCaseName.split("\\.");
+			String mainArea = split[0];
+			String sub = split[1];
+			if(Manager.isAreaExist(mainArea)){
+				Area area = Manager.getArea(mainArea);
+				if(area.getSubzoneManager().isSubzoneExist(sub)){
+					Subzone subzone = area.getSubzoneManager().getSubzone(sub);
+					return new PermissionArea(subzone.getSubzoneName(), area.getAreaName(), AreaType.SUBZONE, subzone.getAreaFlags(), subzone.getWorldName(), subzone.getOwner().getName());
+				}else{
+					System.out.print("Subzone not exist!");
+					return null;
+				}
+			}else{
+				System.out.print("Area not exist!");
+				return null;
+			}
+		}else{
+			if(Manager.isAreaExist(lowerCaseName)){
+				Area area = Manager.getArea(lowerCaseName);
+				return new PermissionArea(area.getAreaName(), AreaType.MAIN, area.getAreaFlags(), area.getWorldName(), area.getOwner().getName());
+			}else{
+				System.out.print("Area not exist!");
+				return null;
+			}
+		}
 	}
 }

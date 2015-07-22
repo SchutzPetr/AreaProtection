@@ -1,5 +1,6 @@
 package cz.Sicka.AreaProtection.Area;
 
+import cz.Sicka.AreaProtection.Flags.Flag;
 import cz.Sicka.AreaProtection.Utils.FlagsMap;
 
 public class WorldArea{
@@ -7,7 +8,6 @@ public class WorldArea{
 	private String areaName;
 	private String owner;
 	private FlagsMap worldFlags;
-	private AreaType type = AreaType.WORLD_AREA;
 	
 	public WorldArea(String worldName, String areaName, String owner){
 		this.owner = owner;
@@ -31,11 +31,15 @@ public class WorldArea{
 		return areaName;
 	}
 
-	public AreaType getType() {
-		return type;
-	}
-
 	public String getOwner() {
 		return owner;
+	}
+	
+	public boolean allowAction(Flag flag){
+		if(getWorldFlags().getFlags().contains(flag.getName())){
+			return getWorldFlags().getFlagValue(flag.getName());
+		}else{
+			return true;
+		}
 	}
 }
